@@ -1,0 +1,87 @@
+---
+/**
+ * Desktop-only cabinet nav.
+ * Clickable hotspots are positioned over the LABEL areas.
+ *
+ * If you later redraw the cabinet or change aspect ratio,
+ * just update the hotspot % values.
+ */
+
+const items = [
+  {
+    id: "about",
+    label: "About",
+    href: "/about",
+    // % values (left, top, width, height) based on your nav-homepage.png (340x736)
+    box: { left: 11.76, top: 16.30, width: 60.59, height: 16.30 },
+  },
+  {
+    id: "story",
+    label: "Story",
+    href: "/story",
+    box: { left: 15.59, top: 33.97, width: 56.76, height: 14.95 },
+  },
+  {
+    id: "shows",
+    label: "Shows",
+    href: "/shows",
+    box: { left: 15.88, top: 52.99, width: 56.47, height: 16.30 },
+  },
+  {
+    id: "collectibles",
+    label: "Collectibles",
+    href: "/collectibles",
+    box: { left: 5.88, top: 76.09, width: 73.53, height: 19.02 },
+  },
+];
+
+const src = "/assets/nav/nav-homepage.png";
+---
+<div class="cabinet" aria-label="Filing Cabinet Navigation">
+  <img class="cabinet__img" src={src} alt="Navigation filing cabinet" draggable="false" />
+
+  {items.map((it) => (
+    <a
+      class="cabinet__hotspot"
+      href={it.href}
+      aria-label={it.label}
+      title={it.label}
+      style={`left:${it.box.left}%; top:${it.box.top}%; width:${it.box.width}%; height:${it.box.height}%;`}
+    />
+  ))}
+</div>
+
+<style>
+  .cabinet{
+    position: relative;
+    width: 320px;          /* desktop default; adjust in OfficeScene */
+    max-width: 30vw;
+    height: auto;
+    user-select: none;
+  }
+
+  .cabinet__img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Transparent clickable label areas */
+  .cabinet__hotspot{
+    position: absolute;
+    display: block;
+    background: transparent;
+    border-radius: 6px;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Optional: subtle hover glow so you can see alignment while testing */
+  .cabinet__hotspot:hover{
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.20);
+  }
+
+  .cabinet__hotspot:focus-visible{
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.95);
+  }
+</style>

@@ -1,0 +1,41 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Kali Hypothesis">
+  <section class="gate">
+    <button id="enterBtn" class="gate__keyhole">
+      <img src="/assets/brand/logo.png" alt="Enter Kali Hypothesis"/>
+    </button>
+  </section>
+
+  <script is:inline>
+    const KEY = "kh_entered";
+
+    if (localStorage.getItem(KEY) === "1") {
+      window.location.replace("/home");
+    }
+
+    document.getElementById("enterBtn")?.addEventListener("click", () => {
+      localStorage.setItem(KEY,"1");
+      window.location.href="/home";
+    });
+  </script>
+</Layout>
+
+<style>
+.gate{
+  min-height:100vh;
+  background:#000;
+  display:grid;
+  place-items:center;
+}
+.gate__keyhole{
+  background:none;
+  border:none;
+  cursor:pointer;
+}
+.gate__keyhole img{
+  width:160px;
+}
+</style>

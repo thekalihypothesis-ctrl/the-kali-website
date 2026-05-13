@@ -1,0 +1,86 @@
+---
+/**
+ * CabinetNav.astro
+ * Uses the same clickable label hotspots, but swaps the cabinet image
+ * based on current page (or via prop override).
+ */
+
+type Variant = "home" | "about" | "story" | "shows" | "collectibles";
+
+const {
+  variant, // optional: if not provided, inferred from pathname
+} = Astro.props as { variant?: Variant };
+
+const pathname = Astro.url.pathname;
+
+const inferredVariant: Variant =
+  pathname === "/about" ? "about" :
+  pathname === "/story" ? "story" :
+  pathname === "/shows" ? "shows" :
+  pathname === "/collectibles" ? "collectibles" :
+  "home";
+
+const v: Variant = variant ?? inferredVariant;
+
+const srcMap: Record<Variant, string> = {
+  home: "/assets/nav/nav-homepage.png",
+  about: "/assets/nav/nav-about.png",
+  story: "/assets/nav/nav-story.png",
+  shows: "/assets/nav/nav-shows.png",
+  collectibles: "/assets/nav/nav-collectibles.png",
+};
+
+// Hotspots (label click areas)
+// ASSUMPTION: label positions are the same across nav-* images.
+// If any variant shifts labels, tell me and I’ll add per-variant boxes.
+const items = [
+  { label: "About", href: "/about", box: { left: 12, top: 16, width: 60, height: 16 } },
+  { label: "Story", href: "/story", box: { left: 16, top: 34, width: 56, height: 15 } },
+  { label: "Shows", href: "/shows", box: { left: 16, top: 53, width: 56, height: 16 } },
+  { label: "Collectibles", href: "/collectibles", box: { left: 6, top: 76, width: 74, height: 19 } },
+];
+---
+
+<div class="cabinet" aria-label="Filing Cabinet Navigation">
+  <img class="cabinet__img" src={srcMap[v]} alt="Navigation filing cabinet" draggable="false" />
+
+  {items.map((it) => (
+    <a
+      class="cabinet__hotspot"
+      href={it.href}
+      aria-label={it.label}
+      title={it.label}
+      style={`left:${it.box.left}%;top:${it.box.top}%;width:${it.box.width}%;height:${it.box.height}%;`}
+    />
+  ))}
+</div>
+
+<style>
+  .cabinet{
+    position: relative;
+    height: 100%;
+  }
+
+  /* cabinet scales by parent height */
+  .cabinet__img{
+    height: 100%;
+    width: auto;
+    display: block;
+  }
+
+  .cabinet__hotspot{
+    position:absolute;
+    display:block;
+    background:transparent;
+    border-radius:6px;
+    outline:none;
+  }
+
+  .cabinet__hotspot:hover{
+    box-shadow:0 0 0 2px rgba(255,255,255,0.25);
+  }
+
+  .cabinet__hotspot:focus-visible{
+    box-shadow:0 0 0 2px #fff;
+  }
+</style>

@@ -1,0 +1,101 @@
+:root{
+  --bg:#000;
+  --fg:#fff;
+  --panelMax:1200px;
+  --navWidth:220px;
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* Keep it crisp */
+img{
+  display:block;
+  max-width:100%;
+  height:auto;
+}
+
+/* Left stacked nav */
+.nav{
+  position:fixed;
+  top:0;
+  left:0;
+  width:var(--navWidth);
+  height:100vh;
+  z-index:50;
+  padding:18px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:stretch;
+  justify-content:flex-start;
+  background:rgba(0,0,0,0.92);
+  border-right:1px solid rgba(255,255,255,0.12);
+}
+
+/* Text buttons */
+.nav a{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  min-height:44px;
+  padding:10px 14px;
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:12px;
+  color:var(--fg);
+  text-decoration:none;
+  background:rgba(255,255,255,0.03);
+  transition:background 0.2s ease, border-color 0.2s ease;
+}
+
+.nav a:hover{
+  background:rgba(255,255,255,0.09);
+  border-color:rgba(255,255,255,0.28);
+}
+
+/* If old nav images still exist somewhere, hide their oversized behavior */
+.nav img{
+  width:auto;
+  max-width:100%;
+  height:auto;
+}
+
+/* Sections */
+.section{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px 24px 24px calc(var(--navWidth) + 24px);
+}
+
+.panel{
+  width:min(var(--panelMax), 100%);
+  border:1px solid var(--fg);
+}
+
+/* Mobile */
+@media (max-width: 700px){
+  :root{
+    --navWidth:100%;
+  }
+
+  .nav{
+    position:static;
+    width:100%;
+    height:auto;
+    border-right:0;
+    border-bottom:1px solid rgba(255,255,255,0.12);
+  }
+
+  .section{
+    padding:24px 12px;
+  }
+}
