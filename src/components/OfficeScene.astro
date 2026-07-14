@@ -1,0 +1,242 @@
+---
+const menuItems = [
+  { href: "/about", label: "About", className: "about", note: "Open the first cabinet file" },
+  { href: "/story", label: "Story", className: "story", note: "Read the case notes" },
+  { href: "/shows", label: "Shows", className: "shows", note: "Check the performance ledger" },
+  { href: "/collectibles", label: "Collectibles", className: "collectibles", note: "Inspect the archive drawer" },
+  { href: "/ar", label: "AR", className: "monitor", note: "Launch the marker scanner" }
+];
+
+const drawerItems = [
+  { href: "/story#d1", label: "D1", className: "d1" },
+  { href: "/story#d2", label: "D2", className: "d2" },
+  { href: "/story#d3", label: "D3", className: "d3" },
+  { href: "/ar", label: "Kali", className: "kali" }
+];
+---
+
+<main class="office" aria-label="Detective office menu">
+  <img
+    class="office__art"
+    src="/images/detective-office-layout.jpg"
+    alt="Black and white detective office with desk, monitor, window, picture frame, and shelf"
+    width="1920"
+    height="1080"
+    draggable="false"
+  />
+
+  <div class="office__brand-layer" aria-hidden="false">
+    <a class="office__brand" href="/" aria-label="The Kali Hypothesis home">
+      <img
+        src="/images/logo.png"
+        alt="The Kali Hypothesis"
+        width="340"
+        height="235"
+        draggable="false"
+      />
+    </a>
+  </div>
+
+  <nav class="office__hotspots" aria-label="Main menu">
+    {menuItems.map((item) => (
+      <a class={`hotspot hotspot--${item.className}`} href={item.href} aria-label={item.note}>
+        <span>{item.label}</span>
+      </a>
+    ))}
+  </nav>
+
+  <nav class="office__drawers" aria-label="Desk drawers">
+    {drawerItems.map((item) => (
+      <a class={`drawer drawer--${item.className}`} href={item.href}>
+        {item.label}
+      </a>
+    ))}
+  </nav>
+</main>
+
+<style>
+  .office {
+    position: relative;
+    display: grid;
+    width: 100vw;
+    height: 100vh;
+    place-items: center;
+    overflow: hidden;
+    background: #050505;
+  }
+
+  .office__art {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+    user-select: none;
+  }
+
+  .office__brand-layer,
+  .office__hotspots,
+  .office__drawers {
+    position: absolute;
+    inset: 0;
+    width: min(100vw, calc(100vh * 1.777778));
+    height: min(100vh, calc(100vw / 1.777778));
+    margin: auto;
+    pointer-events: none;
+  }
+
+  .office__brand {
+    position: absolute;
+    left: 2.1%;
+    top: 1.5%;
+    display: block;
+    width: 7.3%;
+    height: auto;
+    margin: 0;
+    pointer-events: auto;
+    transition:
+      filter 160ms ease,
+      transform 160ms ease;
+  }
+
+  .office__brand img {
+    display: block;
+    width: 100%;
+    height: auto;
+    user-select: none;
+  }
+
+  .office__brand:hover,
+  .office__brand:focus-visible {
+    filter: drop-shadow(0 0 8px rgba(245, 211, 95, 0.75));
+    transform: rotate(-2deg) scale(1.03);
+    outline: none;
+  }
+
+  .hotspot,
+  .drawer {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    border: 2px solid transparent;
+    color: #f7f1e7;
+    font-family: "Komika";
+    font-weight: 900;
+    letter-spacing: 0;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    transform: rotate(var(--tilt, 0deg));
+    pointer-events: auto;
+  }
+
+  .hotspot span,
+  .drawer {
+    filter: drop-shadow(2px 2px 0 #000);
+  }
+
+  .hotspot:focus-visible,
+  .drawer:focus-visible {
+    outline: 3px solid #f5d35f;
+    outline-offset: 2px;
+  }
+
+  .hotspot:hover,
+  .drawer:hover {
+    border-color: #f5d35f;
+    background: rgba(245, 211, 95, 0.12);
+    color: #f5d35f;
+  }
+
+  .hotspot--about {
+    left: 10.7%;
+    top: 42.7%;
+    width: 8.4%;
+    height: 4.2%;
+    --tilt: -1.5deg;
+    font-size: clamp(0.58rem, 1.4vw, 1.4rem);
+  }
+
+  .hotspot--story {
+    left: 10.8%;
+    top: 57.5%;
+    width: 8.4%;
+    height: 4.2%;
+    --tilt: 1deg;
+    font-size: clamp(0.58rem, 1.4vw, 1.4rem);
+  }
+
+  .hotspot--shows {
+    left: 10.8%;
+    top: 72.3%;
+    width: 8.4%;
+    height: 4.2%;
+    --tilt: 1deg;
+    font-size: clamp(0.58rem, 1.4vw, 1.4rem);
+  }
+
+  .hotspot--collectibles {
+    left: 9.9%;
+    top: 86.4%;
+    width: 10.1%;
+    height: 4.5%;
+    --tilt: -1deg;
+    font-size: clamp(0.46rem, 1.08vw, 1.08rem);
+  }
+
+  .hotspot--monitor {
+    left: 42.4%;
+    top: 41.2%;
+    width: 16.6%;
+    height: 16.4%;
+    color: #f6f1e9;
+    font-size: 0;
+  }
+
+  .hotspot--monitor::after {
+    content: "AR";
+    opacity: 0;
+    font-size: clamp(1.5rem, 4vw, 4rem);
+    transition: opacity 160ms ease;
+  }
+
+  .hotspot--monitor:hover::after,
+  .hotspot--monitor:focus-visible::after {
+    opacity: 1;
+  }
+
+  .drawer {
+    left: 61.8%;
+    width: 3.5%;
+    height: 2.8%;
+    font-size: clamp(0.4rem, 0.9vw, 0.9rem);
+  }
+
+  .drawer--d1 {
+    top: 72.1%;
+  }
+
+  .drawer--d2 {
+    top: 79.1%;
+  }
+
+  .drawer--d3 {
+    top: 86.2%;
+  }
+
+  .drawer--kali {
+    top: 93%;
+  }
+
+  @media (max-width: 720px) {
+    .office {
+      background: #050505;
+    }
+
+    .hotspot,
+    .drawer {
+      border-width: 1px;
+    }
+  }
+</style>
+
+

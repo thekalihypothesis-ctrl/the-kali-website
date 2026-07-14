@@ -1,0 +1,83 @@
+@font-face {
+  font-family: "Komika";
+  src: url("/fonts/KOMIKASK.ttf") format("truetype");
+  font-display: swap;
+}
+
+:root {
+  color: #f6f1e9;
+  background: #050505;
+  font-family: "Komika";
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-width: 320px;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.08), transparent 34%),
+    #050505;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.screen-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: clamp(18px, 4vw, 48px);
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.82)),
+    url("/images/detective-office-layout.jpg") center / cover;
+}
+
+.case-file {
+  width: min(760px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  border: 2px solid #f7f1e7;
+  background: #f7f1e7;
+  color: #070707;
+  padding: clamp(20px, 4vw, 42px);
+  box-shadow: 10px 10px 0 #000;
+}
+
+.case-file h1 {
+  margin: 0 0 14px;
+  font-size: clamp(2rem, 7vw, 4.5rem);
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.case-file p {
+  margin: 0 0 18px;
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  line-height: 1.55;
+}
+
+.case-file a {
+  display: inline-block;
+  border: 2px solid currentColor;
+  padding: 10px 14px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
