@@ -3,9 +3,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="AR Scanner | The Kali Hypothesis">
-  <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
-  <script is:inline src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-
   <main class="ar-shell">
     <section id="landing" class="landing" aria-label="AR launch screen">
       <div class="case-folder">
@@ -103,62 +100,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   </main>
 
   <script is:inline>
-    window.addEventListener("load", () => {
-      const aframe = window["AFRAME"];
-      if (!aframe) return;
-
-      aframe.registerComponent("drag-rotate", {
-        init: function () {
-          this.dragging = false;
-          this.lastX = 0;
-          this.lastY = 0;
-          this.rotY = 0;
-          this.rotX = -90;
-
-          const bindCanvas = () => {
-            const canvasEl = this.el.sceneEl.canvas;
-            if (!canvasEl) return;
-
-            const onDown = (event) => {
-              this.dragging = true;
-              const point = event.touches ? event.touches[0] : event;
-              this.lastX = point.clientX;
-              this.lastY = point.clientY;
-            };
-
-            const onMove = (event) => {
-              if (!this.dragging) return;
-              const point = event.touches ? event.touches[0] : event;
-              const dx = point.clientX - this.lastX;
-              const dy = point.clientY - this.lastY;
-              this.lastX = point.clientX;
-              this.lastY = point.clientY;
-              this.rotY += dx * 0.5;
-              this.rotX += dy * 0.5;
-              this.el.setAttribute("rotation", `${this.rotX} ${this.rotY} 0`);
-            };
-
-            const onUp = () => {
-              this.dragging = false;
-            };
-
-            canvasEl.addEventListener("mousedown", onDown);
-            canvasEl.addEventListener("mousemove", onMove);
-            canvasEl.addEventListener("mouseup", onUp);
-            canvasEl.addEventListener("mouseleave", onUp);
-            canvasEl.addEventListener("touchstart", onDown, { passive: true });
-            canvasEl.addEventListener("touchmove", onMove, { passive: true });
-            canvasEl.addEventListener("touchend", onUp);
-          };
-
-          if (this.el.sceneEl.canvas) {
-            bindCanvas();
-          } else {
-            this.el.sceneEl.addEventListener("render-target-loaded", bindCanvas, { once: true });
-          }
-        }
-      });
-
+    document.addEventListener("DOMContentLoaded", () => {
       const landing = document.getElementById("landing");
       const stage = document.getElementById("ar-stage");
       const hud = document.getElementById("hud");
@@ -168,6 +110,98 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       const statusDot = document.getElementById("status-dot");
       const btnStart = document.getElementById("btn-start");
       const template = document.getElementById("ar-scene-template");
+      let dragRotateRegistered = false;
+      let scannerOpening = false;
+
+      const loadScriptOnce = (id, src) =>
+        new Promise((resolve, reject) => {
+          const existing = document.getElementById(id);
+          if (existing) {
+            existing.addEventListener("load", resolve, { once: true });
+            existing.addEventListener("error", reject, { once: true });
+            if (existing.dataset.loaded === "true") resolve();
+            return;
+          }
+
+          const script = document.createElement("script");
+          script.id = id;
+          script.src = src;
+          script.async = false;
+          script.onload = () => {
+            script.dataset.loaded = "true";
+            resolve();
+          };
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+
+      const loadArLibraries = async () => {
+        if (!window["AFRAME"]) {
+          await loadScriptOnce("aframe-lib", "https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js");
+        }
+
+        await loadScriptOnce("arjs-lib", "https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js");
+      };
+
+      const registerDragRotate = () => {
+        const aframe = window["AFRAME"];
+        if (!aframe || dragRotateRegistered || aframe.components["drag-rotate"]) return Boolean(aframe);
+
+        aframe.registerComponent("drag-rotate", {
+          init: function () {
+            this.dragging = false;
+            this.lastX = 0;
+            this.lastY = 0;
+            this.rotY = 0;
+            this.rotX = -90;
+
+            const bindCanvas = () => {
+              const canvasEl = this.el.sceneEl.canvas;
+              if (!canvasEl) return;
+
+              const onDown = (event) => {
+                this.dragging = true;
+                const point = event.touches ? event.touches[0] : event;
+                this.lastX = point.clientX;
+                this.lastY = point.clientY;
+              };
+
+              const onMove = (event) => {
+                if (!this.dragging) return;
+                const point = event.touches ? event.touches[0] : event;
+                const dx = point.clientX - this.lastX;
+                const dy = point.clientY - this.lastY;
+                this.lastX = point.clientX;
+                this.lastY = point.clientY;
+                this.rotY += dx * 0.5;
+                this.rotX += dy * 0.5;
+                this.el.setAttribute("rotation", `${this.rotX} ${this.rotY} 0`);
+              };
+
+              const onUp = () => {
+                this.dragging = false;
+              };
+
+              canvasEl.addEventListener("mousedown", onDown);
+              canvasEl.addEventListener("mousemove", onMove);
+              canvasEl.addEventListener("mouseup", onUp);
+              canvasEl.addEventListener("mouseleave", onUp);
+              canvasEl.addEventListener("touchstart", onDown, { passive: true });
+              canvasEl.addEventListener("touchmove", onMove, { passive: true });
+              canvasEl.addEventListener("touchend", onUp);
+            };
+
+            if (this.el.sceneEl.canvas) {
+              bindCanvas();
+            } else {
+              this.el.sceneEl.addEventListener("render-target-loaded", bindCanvas, { once: true });
+            }
+          }
+        });
+
+        dragRotateRegistered = true;
+        return true;
+      };
 
       const bindMarkerEvents = () => {
         const marker = document.getElementById("custom-marker");
@@ -190,7 +224,33 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         });
       };
 
-      btnStart?.addEventListener("click", () => {
+      btnStart?.addEventListener("click", async () => {
+        if (scannerOpening) return;
+        scannerOpening = true;
+        btnStart.disabled = true;
+        statusText.textContent = "Loading scanner...";
+        statusDot.style.background = "#f05a32";
+        hud.style.display = "block";
+
+        try {
+          await loadArLibraries();
+        } catch {
+          statusText.textContent = "AR library failed to load";
+          statusDot.style.background = "#e8431c";
+          scannerOpening = false;
+          btnStart.disabled = false;
+          return;
+        }
+
+        if (!registerDragRotate()) {
+          statusText.textContent = "A-Frame failed to start";
+          statusDot.style.background = "#e8431c";
+          scannerOpening = false;
+          btnStart.disabled = false;
+          return;
+        }
+
+        statusText.textContent = "Searching...";
         document.body.classList.add("ar-active");
         landing.hidden = true;
         stage.classList.add("is-active");
