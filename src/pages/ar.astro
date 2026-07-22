@@ -3,6 +3,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="AR Scanner | The Kali Hypothesis">
+  <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
+  <script is:inline src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
   <main class="ar-shell">
     <section id="landing" class="landing" aria-label="AR launch screen">
       <div class="case-folder">
@@ -12,7 +15,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         </header>
 
         <div class="case-body">
-          <section>
+          <section class="case-copy">
             <p class="stamp">The Kali Hypothesis</p>
             <h1>Marker<br /><span>Investigation</span></h1>
             <p class="tagline">
@@ -42,7 +45,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       </div>
     </section>
 
-    <template id="ar-scene-template">
+    <div id="ar-scene-wrapper" class="ar-scene-wrapper">
       <a-scene
         id="main-scene"
         embedded
@@ -78,9 +81,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
         <a-entity camera></a-entity>
       </a-scene>
-    </template>
-
-    <div id="ar-stage" class="ar-stage" aria-label="AR scanner viewport"></div>
+    </div>
 
     <div id="hud" class="hud">
       <div class="hud-row">
@@ -100,176 +101,90 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   </main>
 
   <script is:inline>
-    document.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("load", () => {
+      const aframe = window["AFRAME"];
+      if (!aframe) return;
+
+      aframe.registerComponent("drag-rotate", {
+        init: function () {
+          this.dragging = false;
+          this.lastX = 0;
+          this.lastY = 0;
+          this.rotY = 0;
+          this.rotX = -90;
+
+          const canvasEl = this.el.sceneEl.canvas;
+
+          const onDown = (event) => {
+            this.dragging = true;
+            const point = event.touches ? event.touches[0] : event;
+            this.lastX = point.clientX;
+            this.lastY = point.clientY;
+          };
+
+          const onMove = (event) => {
+            if (!this.dragging) return;
+            const point = event.touches ? event.touches[0] : event;
+            const dx = point.clientX - this.lastX;
+            const dy = point.clientY - this.lastY;
+
+            this.lastX = point.clientX;
+            this.lastY = point.clientY;
+            this.rotY += dx * 0.5;
+            this.rotX += dy * 0.5;
+
+            this.el.setAttribute("rotation", `${this.rotX} ${this.rotY} 0`);
+          };
+
+          const onUp = () => {
+            this.dragging = false;
+          };
+
+          canvasEl.addEventListener("mousedown", onDown);
+          canvasEl.addEventListener("mousemove", onMove);
+          canvasEl.addEventListener("mouseup", onUp);
+          canvasEl.addEventListener("mouseleave", onUp);
+          canvasEl.addEventListener("touchstart", onDown, { passive: true });
+          canvasEl.addEventListener("touchmove", onMove, { passive: true });
+          canvasEl.addEventListener("touchend", onUp);
+        }
+      });
+
       const landing = document.getElementById("landing");
-      const stage = document.getElementById("ar-stage");
+      const sceneWrap = document.getElementById("ar-scene-wrapper");
       const hud = document.getElementById("hud");
       const scanRing = document.getElementById("scan-ring");
       const btnClose = document.getElementById("btn-close");
       const statusText = document.getElementById("status-text");
       const statusDot = document.getElementById("status-dot");
       const btnStart = document.getElementById("btn-start");
-      const template = document.getElementById("ar-scene-template");
-      let dragRotateRegistered = false;
-      let scannerOpening = false;
+      const marker = document.getElementById("custom-marker");
 
-      const loadScriptOnce = (id, src) =>
-        new Promise((resolve, reject) => {
-          const existing = document.getElementById(id);
-          if (existing) {
-            existing.addEventListener("load", resolve, { once: true });
-            existing.addEventListener("error", reject, { once: true });
-            if (existing.dataset.loaded === "true") resolve();
-            return;
-          }
-
-          const script = document.createElement("script");
-          script.id = id;
-          script.src = src;
-          script.async = false;
-          script.onload = () => {
-            script.dataset.loaded = "true";
-            resolve();
-          };
-          script.onerror = reject;
-          document.head.appendChild(script);
-        });
-
-      const loadArLibraries = async () => {
-        if (!window["AFRAME"]) {
-          await loadScriptOnce("aframe-lib", "https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js");
-        }
-
-        await loadScriptOnce("arjs-lib", "https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js");
-      };
-
-      const registerDragRotate = () => {
-        const aframe = window["AFRAME"];
-        if (!aframe || dragRotateRegistered || aframe.components["drag-rotate"]) return Boolean(aframe);
-
-        aframe.registerComponent("drag-rotate", {
-          init: function () {
-            this.dragging = false;
-            this.lastX = 0;
-            this.lastY = 0;
-            this.rotY = 0;
-            this.rotX = -90;
-
-            const bindCanvas = () => {
-              const canvasEl = this.el.sceneEl.canvas;
-              if (!canvasEl) return;
-
-              const onDown = (event) => {
-                this.dragging = true;
-                const point = event.touches ? event.touches[0] : event;
-                this.lastX = point.clientX;
-                this.lastY = point.clientY;
-              };
-
-              const onMove = (event) => {
-                if (!this.dragging) return;
-                const point = event.touches ? event.touches[0] : event;
-                const dx = point.clientX - this.lastX;
-                const dy = point.clientY - this.lastY;
-                this.lastX = point.clientX;
-                this.lastY = point.clientY;
-                this.rotY += dx * 0.5;
-                this.rotX += dy * 0.5;
-                this.el.setAttribute("rotation", `${this.rotX} ${this.rotY} 0`);
-              };
-
-              const onUp = () => {
-                this.dragging = false;
-              };
-
-              canvasEl.addEventListener("mousedown", onDown);
-              canvasEl.addEventListener("mousemove", onMove);
-              canvasEl.addEventListener("mouseup", onUp);
-              canvasEl.addEventListener("mouseleave", onUp);
-              canvasEl.addEventListener("touchstart", onDown, { passive: true });
-              canvasEl.addEventListener("touchmove", onMove, { passive: true });
-              canvasEl.addEventListener("touchend", onUp);
-            };
-
-            if (this.el.sceneEl.canvas) {
-              bindCanvas();
-            } else {
-              this.el.sceneEl.addEventListener("render-target-loaded", bindCanvas, { once: true });
-            }
-          }
-        });
-
-        dragRotateRegistered = true;
-        return true;
-      };
-
-      const bindMarkerEvents = () => {
-        const marker = document.getElementById("custom-marker");
-        marker?.addEventListener("markerFound", () => {
-          statusText.textContent = "Evidence recovered";
-          statusDot.style.background = "#22c55e";
-          scanRing.style.display = "none";
-        });
-
-        marker?.addEventListener("markerLost", () => {
-          statusText.textContent = "Searching...";
-          statusDot.style.background = "#e8431c";
-          scanRing.style.display = "block";
-        });
-      };
-
-      const constrainRuntimeLayers = () => {
-        document.querySelectorAll("body > video").forEach((video) => {
-          stage.prepend(video);
-        });
-      };
-
-      btnStart?.addEventListener("click", async () => {
-        if (scannerOpening) return;
-        scannerOpening = true;
-        btnStart.disabled = true;
-        statusText.textContent = "Loading scanner...";
-        statusDot.style.background = "#f05a32";
-        hud.style.display = "block";
-
-        try {
-          await loadArLibraries();
-        } catch {
-          statusText.textContent = "AR library failed to load";
-          statusDot.style.background = "#e8431c";
-          scannerOpening = false;
-          btnStart.disabled = false;
-          return;
-        }
-
-        if (!registerDragRotate()) {
-          statusText.textContent = "A-Frame failed to start";
-          statusDot.style.background = "#e8431c";
-          scannerOpening = false;
-          btnStart.disabled = false;
-          return;
-        }
-
-        statusText.textContent = "Searching...";
+      btnStart?.addEventListener("click", () => {
         document.body.classList.add("ar-active");
-        landing.hidden = true;
-        stage.classList.add("is-active");
-
-        if (template && !stage.querySelector("a-scene")) {
-          stage.appendChild(template.content.cloneNode(true));
-          bindMarkerEvents();
-        }
-
+        landing.style.display = "none";
+        sceneWrap.classList.add("is-active");
+        sceneWrap.style.display = "block";
         hud.style.display = "block";
         scanRing.style.display = "block";
         btnClose.style.display = "flex";
-
-        window.setTimeout(constrainRuntimeLayers, 250);
-        window.setTimeout(constrainRuntimeLayers, 1000);
       });
 
       btnClose?.addEventListener("click", () => {
+        document.body.classList.remove("ar-active");
         window.location.href = "/";
+      });
+
+      marker?.addEventListener("markerFound", () => {
+        statusText.textContent = "Evidence recovered";
+        statusDot.style.background = "#22c55e";
+        scanRing.style.display = "none";
+      });
+
+      marker?.addEventListener("markerLost", () => {
+        statusText.textContent = "Searching...";
+        statusDot.style.background = "#e8431c";
+        scanRing.style.display = "block";
       });
     });
   </script>
@@ -277,8 +192,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
 <style>
   .ar-shell {
-    --stage-width: min(100vw, calc(100vh * 1.777778));
-    --stage-height: min(100vh, calc(100vw / 1.777778));
     min-height: 100vh;
     overflow: hidden;
     background:
@@ -291,8 +204,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     position: fixed;
     inset: 0;
     z-index: 100;
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     padding: clamp(18px, 4vw, 44px);
     background:
       linear-gradient(rgba(5, 5, 5, 0.64), rgba(5, 5, 5, 0.82)),
@@ -304,7 +219,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     max-height: calc(100vh - 36px);
     overflow: auto;
     border: 2px solid #f8f5ef;
-    background: #f8f5ef;
+    background:
+      linear-gradient(90deg, rgba(5, 5, 5, 0.05), transparent 16%, rgba(5, 5, 5, 0.08)),
+      #f8f5ef;
     box-shadow: 12px 12px 0 #050505;
     color: #050505;
   }
@@ -332,28 +249,20 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     padding: clamp(22px, 5vw, 58px);
   }
 
-  .eyebrow,
-  .case-number,
-  .stamp,
-  .marker-hint,
-  .hud-label,
-  .hud-status,
-  .hud p {
+  .eyebrow {
+    margin: 0;
+    color: #050505;
+    font-size: clamp(0.62rem, 1.4vw, 0.86rem);
     letter-spacing: 0;
     text-transform: uppercase;
   }
 
-  .eyebrow,
   .case-number,
   .stamp {
     margin: 0;
-    font-size: clamp(0.62rem, 1.4vw, 0.86rem);
-  }
-
-  .case-number,
-  .stamp,
-  h1 span {
     color: #b72d18;
+    font-size: clamp(0.62rem, 1.3vw, 0.82rem);
+    text-transform: uppercase;
   }
 
   .stamp {
@@ -372,6 +281,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     text-transform: uppercase;
   }
 
+  h1 span {
+    color: #b72d18;
+  }
+
   .tagline {
     max-width: 28rem;
     margin: 1.4rem 0 0;
@@ -386,7 +299,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     gap: 12px;
     margin: 0;
     padding: 18px;
-    background: #050505;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    background:
+      repeating-linear-gradient(0deg, rgba(5, 5, 5, 0.08) 0 1px, transparent 1px 12px),
+      #050505;
     color: #f8f5ef;
   }
 
@@ -401,7 +317,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   .marker-hint {
     margin: 0;
+    color: #f8f5ef;
     font-size: 0.68rem;
+    letter-spacing: 0;
+    text-transform: uppercase;
   }
 
   .btn-start,
@@ -418,9 +337,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     font: inherit;
     font-size: clamp(0.72rem, 1.4vw, 0.95rem);
     font-weight: 700;
+    letter-spacing: 0;
     padding: 0.78rem 1.2rem;
     text-decoration: none;
     text-transform: uppercase;
+    transition:
+      background 160ms ease,
+      color 160ms ease;
   }
 
   .office-link {
@@ -434,40 +357,35 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     color: #f8f5ef;
   }
 
-  .ar-stage {
+  .ar-scene-wrapper {
     position: fixed;
     inset: 0;
     z-index: 10;
     display: none;
-    width: var(--stage-width);
-    height: var(--stage-height);
+    width: min(100vw, calc(100vh * 1.777778));
+    height: min(100vh, calc(100vw / 1.777778));
     margin: auto;
     overflow: hidden;
     background: #050505;
   }
 
-  .ar-stage.is-active {
-    display: block;
+  a-scene {
+    width: 100%;
+    height: 100%;
   }
 
-  .ar-stage :global(a-scene),
-  .ar-stage :global(video),
-  .ar-stage :global(canvas.a-canvas),
-  .ar-stage :global(.a-canvas) {
+  .ar-scene-wrapper video {
     position: absolute !important;
-    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-  }
-
-  .ar-stage :global(video) {
     object-fit: contain !important;
   }
 
-  .ar-stage :global(a-scene),
-  .ar-stage :global(canvas.a-canvas),
-  .ar-stage :global(.a-canvas) {
-    background: transparent !important;
+  .ar-scene-wrapper canvas.a-canvas {
+    width: 100% !important;
+    height: 100% !important;
   }
 
   .hud {
@@ -477,8 +395,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     left: 0;
     z-index: 50;
     display: none;
-    width: var(--stage-width);
-    margin: 0 auto;
     padding: 1rem 1.4rem 1.5rem;
     background: linear-gradient(to top, rgba(5, 5, 5, 0.86) 0%, rgba(5, 5, 5, 0.18) 100%);
     pointer-events: none;
@@ -494,10 +410,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   .hud-status,
   .hud p {
     font-size: 0.68rem;
+    letter-spacing: 0;
+    text-transform: uppercase;
   }
 
-  .hud-label,
-  .hud p {
+  .hud-label {
     color: rgba(255, 255, 255, 0.5);
   }
 
@@ -507,6 +424,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   .hud p {
     margin: 0.6rem 0 0;
+    color: rgba(255, 255, 255, 0.45);
     text-align: center;
   }
 
@@ -522,8 +440,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   .btn-close {
     position: fixed;
-    top: calc((100vh - var(--stage-height)) / 2 + 1rem);
-    right: calc((100vw - var(--stage-width)) / 2 + 1rem);
+    top: 1rem;
+    right: 1rem;
     z-index: 60;
     display: none;
     width: 40px;
@@ -555,6 +473,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     width: 180px;
     height: 180px;
     border: 2px solid rgba(240, 90, 50, 0.64);
+    border-radius: 0;
   }
 
   .ring::before,
@@ -591,23 +510,64 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     transform: translateX(-50%);
   }
 
+
   :global(body.ar-active) {
-    --stage-width: min(100vw, calc(100vh * 1.777778));
-    --stage-height: min(100vh, calc(100vw / 1.777778));
     overflow: hidden;
     background: #050505;
   }
 
-  :global(body.ar-active > video) {
+  :global(body.ar-active .ar-shell) {
+    background: transparent;
+  }
+
+  :global(body.ar-active .ar-scene-wrapper.is-active) {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 10 !important;
+    width: min(100vw, calc(100vh * 1.777778)) !important;
+    height: min(100vh, calc(100vw / 1.777778)) !important;
+    margin: auto !important;
+    overflow: hidden !important;
+    background: #050505 !important;
+  }
+
+  :global(body.ar-active video) {
     position: fixed !important;
     inset: 0 !important;
     z-index: 1 !important;
-    width: var(--stage-width) !important;
-    height: var(--stage-height) !important;
+    width: min(100vw, calc(100vh * 1.777778)) !important;
+    height: min(100vh, calc(100vw / 1.777778)) !important;
     margin: auto !important;
     object-fit: contain !important;
   }
 
+  :global(body.ar-active canvas.a-canvas),
+  :global(body.ar-active .a-canvas) {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2 !important;
+    width: min(100vw, calc(100vh * 1.777778)) !important;
+    height: min(100vh, calc(100vw / 1.777778)) !important;
+    margin: auto !important;
+    background: transparent !important;
+  }
+
+  :global(body.ar-active a-scene) {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 3 !important;
+    width: min(100vw, calc(100vh * 1.777778)) !important;
+    height: min(100vh, calc(100vw / 1.777778)) !important;
+    margin: auto !important;
+    background: transparent !important;
+  }
+
+  :global(body.ar-active .hud) {
+    right: 0 !important;
+    left: 0 !important;
+    width: min(100vw, calc(100vh * 1.777778)) !important;
+    margin: 0 auto !important;
+  }
   @media (max-width: 760px) {
     .case-body {
       grid-template-columns: 1fr;
@@ -635,3 +595,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     }
   }
 </style>
+
+
+
