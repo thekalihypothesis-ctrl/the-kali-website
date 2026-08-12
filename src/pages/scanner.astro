@@ -35,7 +35,7 @@
       <p class="note">Camera permission required / Works in Chrome and Safari</p>
     </div>
 
-    <div id="ar-scene-wrapper">
+    <template id="ar-scene-template">
       <a-scene
         id="main-scene"
         embedded
@@ -70,6 +70,9 @@
 
         <a-entity camera></a-entity>
       </a-scene>
+    </template>
+
+    <div id="ar-scene-wrapper">
     </div>
 
     <div id="hud">
@@ -96,19 +99,9 @@
       const statusText = document.getElementById("status-text");
       const statusDot = document.getElementById("status-dot");
       const btnStart = document.getElementById("btn-start");
+      const sceneTemplate = document.getElementById("ar-scene-template");
 
-      btnStart?.addEventListener("click", () => {
-        if (!landing || !sceneWrap || !hud || !scanRing || !btnClose) return;
-        landing.style.display = "none";
-        sceneWrap.style.display = "block";
-        hud.style.display = "block";
-        scanRing.style.display = "block";
-        btnClose.style.display = "flex";
-      });
-
-      btnClose?.addEventListener("click", () => location.reload());
-
-      document.addEventListener("DOMContentLoaded", () => {
+      const bindMarkerEvents = () => {
         setTimeout(() => {
           const marker = document.getElementById("custom-marker");
           if (!marker) return;
@@ -127,7 +120,32 @@
             scanRing.style.display = "block";
           });
         }, 1200);
+      };
+
+      btnStart?.addEventListener("click", () => {
+        if (!landing || !sceneWrap || !hud || !scanRing || !btnClose) return;
+        if (!window["AFRAME"]) {
+          if (statusText && statusDot) {
+            statusText.textContent = "AR library failed to load";
+            statusDot.style.background = "#e8431c";
+          }
+          hud.style.display = "block";
+          return;
+        }
+
+        landing.style.display = "none";
+        sceneWrap.style.display = "block";
+        hud.style.display = "block";
+        scanRing.style.display = "block";
+        btnClose.style.display = "flex";
+
+        if (sceneTemplate instanceof HTMLTemplateElement && !sceneWrap.querySelector("a-scene")) {
+          sceneWrap.appendChild(sceneTemplate.content.cloneNode(true));
+          bindMarkerEvents();
+        }
       });
+
+      btnClose?.addEventListener("click", () => location.reload());
     </script>
   </body>
 </html>
