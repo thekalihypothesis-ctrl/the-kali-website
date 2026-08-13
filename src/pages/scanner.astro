@@ -101,6 +101,80 @@
       const btnStart = document.getElementById("btn-start");
       const sceneTemplate = document.getElementById("ar-scene-template");
 
+      const showCameraStatus = (message) => {
+        let debug = document.querySelector("#camera-debug");
+
+        if (!debug) {
+          debug = document.createElement("div");
+          debug.id = "camera-debug";
+          debug.style.cssText = `
+            position: fixed;
+            top: max(10px, env(safe-area-inset-top));
+            left: 10px;
+            right: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.88);
+            color: #ff533d;
+            font: 12px monospace;
+            z-index: 99999;
+            pointer-events: none;
+          `;
+          document.body.appendChild(debug);
+        }
+
+        debug.textContent = message;
+      };
+
+      const forceCameraLayer = () => {
+        const video = document.querySelector("#arjs-video");
+        if (!(video instanceof HTMLVideoElement)) return;
+
+        video.style.setProperty("display", "block", "important");
+        video.style.setProperty("visibility", "visible", "important");
+        video.style.setProperty("opacity", "1", "important");
+        video.style.setProperty("position", "fixed", "important");
+        video.style.setProperty("inset", "0", "important");
+        video.style.setProperty("width", "100vw", "important");
+        video.style.setProperty("height", "100dvh", "important");
+        video.style.setProperty("object-fit", "cover", "important");
+        video.style.setProperty("z-index", "0", "important");
+        video.play().catch((error) => {
+          console.error("VIDEO PLAY ERROR", error);
+        });
+      };
+
+      window.addEventListener("camera-init", (event) => {
+        console.log("CAMERA INIT OK", event);
+        showCameraStatus("CAMERA STREAM OK");
+        forceCameraLayer();
+      });
+
+      window.addEventListener("camera-error", (event) => {
+        console.error("CAMERA ERROR", event);
+        const error = event.error || {};
+        showCameraStatus(`CAMERA ERROR: ${error.name || ""} ${error.message || ""}`);
+      });
+
+      window.addEventListener("arjs-video-loaded", () => {
+        console.log("ARJS VIDEO ELEMENT LOADED");
+        forceCameraLayer();
+
+        const video = document.querySelector("#arjs-video");
+        if (video instanceof HTMLVideoElement) {
+          const styles = getComputedStyle(video);
+          console.log("VIDEO:", {
+            width: video.videoWidth,
+            height: video.videoHeight,
+            paused: video.paused,
+            readyState: video.readyState,
+            display: styles.display,
+            visibility: styles.visibility,
+            opacity: styles.opacity,
+            zIndex: styles.zIndex
+          });
+        }
+      });
+
       const bindMarkerEvents = () => {
         setTimeout(() => {
           const marker = document.getElementById("custom-marker");
@@ -142,6 +216,9 @@
         if (sceneTemplate instanceof HTMLTemplateElement && !sceneWrap.querySelector("a-scene")) {
           sceneWrap.appendChild(sceneTemplate.content.cloneNode(true));
           bindMarkerEvents();
+          setTimeout(forceCameraLayer, 500);
+          setTimeout(forceCameraLayer, 1200);
+          setTimeout(forceCameraLayer, 2200);
         }
       });
 
@@ -295,12 +372,12 @@
   #ar-scene-wrapper {
     position: fixed;
     inset: 0;
-    z-index: 10;
+    z-index: 0;
     display: none;
     width: 100vw;
     height: 100dvh;
     overflow: hidden;
-    background: #000;
+    background: transparent;
   }
 
   a-scene {
@@ -308,26 +385,44 @@
     height: 100dvh;
   }
 
-  video,
+  #arjs-video {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    object-fit: cover !important;
+    z-index: 0 !important;
+  }
+
+  video {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    object-fit: cover !important;
+    z-index: 0 !important;
+  }
+
   canvas.a-canvas,
-  .a-canvas,
+  .a-canvas {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    background: transparent !important;
+    z-index: 1 !important;
+  }
+
   a-scene {
     position: fixed !important;
     inset: 0 !important;
     width: 100vw !important;
     height: 100dvh !important;
-  }
-
-  video {
-    z-index: 1 !important;
-    object-fit: cover !important;
-  }
-
-  canvas.a-canvas,
-  .a-canvas,
-  a-scene {
-    z-index: 2 !important;
     background: transparent !important;
+    z-index: 1 !important;
   }
 
   #hud {
@@ -335,7 +430,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 50;
+    z-index: 20;
     display: none;
     padding: 1rem 1.4rem max(1.6rem, env(safe-area-inset-bottom));
     background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, transparent 100%);
@@ -379,7 +474,7 @@
     position: fixed;
     top: max(1rem, env(safe-area-inset-top));
     right: max(1rem, env(safe-area-inset-right));
-    z-index: 60;
+    z-index: 30;
     display: none;
     width: 44px;
     height: 44px;
@@ -397,7 +492,7 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    z-index: 40;
+    z-index: 20;
     display: none;
     pointer-events: none;
     transform: translate(-50%, -50%);
