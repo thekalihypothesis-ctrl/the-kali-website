@@ -41,7 +41,7 @@
         embedded
         arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
         vr-mode-ui="enabled: false"
-        renderer="logarithmicDepthBuffer: true; antialias: true;"
+        renderer="alpha: true; logarithmicDepthBuffer: true; antialias: true;"
         loading-screen="enabled: false"
       >
         <a-assets>
@@ -319,7 +319,15 @@
   }
 
   video {
+    z-index: 1 !important;
     object-fit: cover !important;
+  }
+
+  canvas.a-canvas,
+  .a-canvas,
+  a-scene {
+    z-index: 2 !important;
+    background: transparent !important;
   }
 
   #hud {
