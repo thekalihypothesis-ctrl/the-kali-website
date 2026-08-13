@@ -73,12 +73,20 @@ const description = "The Kali Hypothesis mobile marker scanner.";
           smoothThreshold="5"
         >
           <a-entity
+            id="cover-entity"
             gltf-model="#cover-model"
             position="0 0 0"
             scale="0.5 0.5 0.5"
             rotation="-90 0 0"
             animation="property: rotation; from: -90 0 0; to: -90 360 0; loop: true; dur: 6000; easing: linear"
           ></a-entity>
+          <a-box
+            id="tracking-test-cube"
+            position="0 0.25 0"
+            scale="0.35 0.35 0.35"
+            color="#e8431c"
+            material="opacity: 0.85;"
+          ></a-box>
           <a-light type="ambient" intensity="0.8"></a-light>
           <a-light type="directional" position="1 2 1" intensity="1.2"></a-light>
         </a-marker>
@@ -214,6 +222,7 @@ const description = "The Kali Hypothesis mobile marker scanner.";
         setTimeout(() => {
           const marker = document.getElementById("custom-marker");
           if (!marker) return;
+          const coverEntity = document.getElementById("cover-entity");
 
           marker.addEventListener("markerFound", () => {
             if (!statusText || !statusDot || !scanRing) return;
@@ -227,6 +236,15 @@ const description = "The Kali Hypothesis mobile marker scanner.";
             statusText.textContent = "Searching...";
             statusDot.style.background = "#e8431c";
             scanRing.style.display = "block";
+          });
+
+          coverEntity?.addEventListener("model-loaded", () => {
+            console.log("COVER MODEL LOADED");
+          });
+
+          coverEntity?.addEventListener("model-error", (event) => {
+            console.error("COVER MODEL ERROR", event);
+            showCameraStatus("MODEL ERROR: cover.glb failed to load", true);
           });
         }, 1200);
       };
