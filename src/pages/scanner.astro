@@ -116,7 +116,21 @@ const description = "The Kali Hypothesis mobile marker scanner.";
       const btnStart = document.getElementById("btn-start");
       const sceneTemplate = document.getElementById("ar-scene-template");
 
-      const showCameraStatus = (message) => {
+      const syncViewportSize = () => {
+        const viewport = window.visualViewport;
+        const width = viewport?.width || window.innerWidth;
+        const height = viewport?.height || window.innerHeight;
+
+        document.documentElement.style.setProperty("--scanner-width", `${width}px`);
+        document.documentElement.style.setProperty("--scanner-height", `${height}px`);
+      };
+
+      syncViewportSize();
+      window.addEventListener("resize", syncViewportSize);
+      window.visualViewport?.addEventListener("resize", syncViewportSize);
+      window.visualViewport?.addEventListener("scroll", syncViewportSize);
+
+      const showCameraStatus = (message, persist = false) => {
         let debug = document.querySelector("#camera-debug");
 
         if (!debug) {
@@ -138,9 +152,15 @@ const description = "The Kali Hypothesis mobile marker scanner.";
         }
 
         debug.textContent = message;
+        if (!persist) {
+          setTimeout(() => {
+            debug?.remove();
+          }, 1600);
+        }
       };
 
       const forceCameraLayer = () => {
+        syncViewportSize();
         const video = document.querySelector("#arjs-video");
         if (!(video instanceof HTMLVideoElement)) return;
 
@@ -149,8 +169,8 @@ const description = "The Kali Hypothesis mobile marker scanner.";
         video.style.setProperty("opacity", "1", "important");
         video.style.setProperty("position", "fixed", "important");
         video.style.setProperty("inset", "0", "important");
-        video.style.setProperty("width", "100vw", "important");
-        video.style.setProperty("height", "100dvh", "important");
+        video.style.setProperty("width", "var(--scanner-width)", "important");
+        video.style.setProperty("height", "var(--scanner-height)", "important");
         video.style.setProperty("object-fit", "cover", "important");
         video.style.setProperty("z-index", "0", "important");
         video.play().catch((error) => {
@@ -167,7 +187,7 @@ const description = "The Kali Hypothesis mobile marker scanner.";
       window.addEventListener("camera-error", (event) => {
         console.error("CAMERA ERROR", event);
         const error = event.error || {};
-        showCameraStatus(`CAMERA ERROR: ${error.name || ""} ${error.message || ""}`);
+        showCameraStatus(`CAMERA ERROR: ${error.name || ""} ${error.message || ""}`, true);
       });
 
       window.addEventListener("arjs-video-loaded", () => {
@@ -257,13 +277,15 @@ const description = "The Kali Hypothesis mobile marker scanner.";
     --accent: #e8431c;
     --muted: #888;
     --mono: "Courier New", Courier, monospace;
+    --scanner-width: 100vw;
+    --scanner-height: 100dvh;
   }
 
   html,
   body {
     width: 100%;
     min-width: 320px;
-    height: 100%;
+    height: var(--scanner-height);
     overflow: hidden;
     background: var(--ink);
     color: var(--paper);
@@ -274,7 +296,7 @@ const description = "The Kali Hypothesis mobile marker scanner.";
   }
 
   body {
-    min-height: 100dvh;
+    min-height: var(--scanner-height);
   }
 
   button {
@@ -287,11 +309,13 @@ const description = "The Kali Hypothesis mobile marker scanner.";
     inset: 0;
     z-index: 100;
     display: flex;
-    min-height: 100dvh;
+    width: var(--scanner-width);
+    min-height: var(--scanner-height);
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 0;
+    overflow: auto;
     padding: max(2rem, env(safe-area-inset-top)) max(1.4rem, env(safe-area-inset-right))
       max(2rem, env(safe-area-inset-bottom)) max(1.4rem, env(safe-area-inset-left));
     background: var(--ink);
@@ -334,7 +358,7 @@ const description = "The Kali Hypothesis mobile marker scanner.";
     height: min(140px, 38vw);
     align-items: center;
     justify-content: center;
-    margin: 2.4rem 0 1rem;
+    margin: clamp(1.2rem, 7vh, 2.4rem) 0 1rem;
     overflow: hidden;
     border: 2px solid rgba(255, 255, 255, 0.12);
     border-radius: 6px;
@@ -348,7 +372,7 @@ const description = "The Kali Hypothesis mobile marker scanner.";
   }
 
   .marker-hint {
-    margin-bottom: 2rem;
+    margin-bottom: clamp(1.2rem, 6vh, 2rem);
     color: var(--muted);
     font-family: var(--mono);
     font-size: 0.65rem;
@@ -389,15 +413,15 @@ const description = "The Kali Hypothesis mobile marker scanner.";
     inset: 0;
     z-index: 0;
     display: none;
-    width: 100vw;
-    height: 100dvh;
+    width: var(--scanner-width);
+    height: var(--scanner-height);
     overflow: hidden;
     background: transparent;
   }
 
   a-scene {
-    width: 100vw;
-    height: 100dvh;
+    width: var(--scanner-width);
+    height: var(--scanner-height);
   }
 
   #arjs-video {
@@ -406,8 +430,8 @@ const description = "The Kali Hypothesis mobile marker scanner.";
     opacity: 1 !important;
     position: fixed !important;
     inset: 0 !important;
-    width: 100vw !important;
-    height: 100dvh !important;
+    width: var(--scanner-width) !important;
+    height: var(--scanner-height) !important;
     object-fit: cover !important;
     z-index: 0 !important;
   }
@@ -415,8 +439,8 @@ const description = "The Kali Hypothesis mobile marker scanner.";
   video {
     position: fixed !important;
     inset: 0 !important;
-    width: 100vw !important;
-    height: 100dvh !important;
+    width: var(--scanner-width) !important;
+    height: var(--scanner-height) !important;
     object-fit: cover !important;
     z-index: 0 !important;
   }
@@ -425,8 +449,8 @@ const description = "The Kali Hypothesis mobile marker scanner.";
   .a-canvas {
     position: fixed !important;
     inset: 0 !important;
-    width: 100vw !important;
-    height: 100dvh !important;
+    width: var(--scanner-width) !important;
+    height: var(--scanner-height) !important;
     background: transparent !important;
     z-index: 1 !important;
   }
@@ -434,8 +458,8 @@ const description = "The Kali Hypothesis mobile marker scanner.";
   a-scene {
     position: fixed !important;
     inset: 0 !important;
-    width: 100vw !important;
-    height: 100dvh !important;
+    width: var(--scanner-width) !important;
+    height: var(--scanner-height) !important;
     background: transparent !important;
     z-index: 1 !important;
   }
