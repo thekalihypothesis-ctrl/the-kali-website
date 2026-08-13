@@ -1,4 +1,8 @@
 ---
+const siteUrl = import.meta.env.PUBLIC_SITE_URL || "https://the-kali-website.thekalihypothesis.workers.dev";
+const socialImageUrl = new URL("/images/share-logo.png", siteUrl).toString();
+const title = "Marker AR | The Kali Hypothesis";
+const description = "The Kali Hypothesis mobile marker scanner.";
 ---
 
 <!doctype html>
@@ -9,7 +13,18 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <title>Marker AR | The Kali Hypothesis</title>
+    <meta name="description" content={description} />
+    <meta property="og:site_name" content="The Kali Hypothesis" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:alt" content="The Kali Hypothesis share logo" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
+    <title>{title}</title>
     <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
     <script is:inline src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   </head>

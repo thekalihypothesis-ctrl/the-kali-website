@@ -7,6 +7,9 @@ interface Props {
 
 const { title = "The Kali Hypothesis" } = Astro.props;
 const gaMeasurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || "G-PY77PEBT2L";
+const siteUrl = import.meta.env.PUBLIC_SITE_URL || "https://the-kali-website.thekalihypothesis.workers.dev";
+const socialImageUrl = new URL("/images/share-logo.png", siteUrl).toString();
+const description = "The Kali Hypothesis interactive detective archive.";
 ---
 
 <!doctype html>
@@ -15,6 +18,17 @@ const gaMeasurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || "G-PY77PEBT2
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta property="og:site_name" content="The Kali Hypothesis" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:alt" content="The Kali Hypothesis logo" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
     <title>{title}</title>
     {
       gaMeasurementId && (
