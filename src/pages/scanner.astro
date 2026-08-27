@@ -25,7 +25,7 @@ const title = "Basic AR Test | The Kali Hypothesis";
     <template id="scene-template">
       <a-scene
         embedded
-        arjs="sourceType: webcam; sourceWidth: 480; sourceHeight: 640; displayWidth: 480; displayHeight: 640; debugUIEnabled: false;"
+        arjs="sourceType: webcam; sourceWidth: 480; sourceHeight: 640; debugUIEnabled: false;"
         renderer="logarithmicDepthBuffer: true; antialias: true; alpha: true;"
         vr-mode-ui="enabled: false"
         loading-screen="enabled: false"
@@ -52,11 +52,36 @@ const title = "Basic AR Test | The Kali Hypothesis";
       const close = document.getElementById("close");
       const template = document.getElementById("scene-template");
 
+      const syncViewport = () => {
+        const viewport = window.visualViewport;
+        const width = Math.round(viewport?.width || window.innerWidth);
+        const height = Math.round(viewport?.height || window.innerHeight);
+
+        document.documentElement.style.setProperty("--scanner-width", `${width}px`);
+        document.documentElement.style.setProperty("--scanner-height", `${height}px`);
+
+        const scene = document.querySelector("a-scene");
+        const canvas = document.querySelector(".a-canvas");
+        const video = document.querySelector("#arjs-video");
+
+        [scene, canvas, video].forEach((element) => {
+          if (!(element instanceof HTMLElement)) return;
+          element.style.setProperty("width", `${width}px`, "important");
+          element.style.setProperty("height", `${height}px`, "important");
+        });
+
+        const renderer = scene?.renderer;
+        if (renderer) {
+          renderer.setSize(width, height);
+        }
+      };
+
       const setStatus = (message) => {
         if (status) status.textContent = message;
       };
 
       const forceVideoVisible = () => {
+        syncViewport();
         const video = document.querySelector("#arjs-video");
         if (!(video instanceof HTMLVideoElement)) return;
 
@@ -65,12 +90,18 @@ const title = "Basic AR Test | The Kali Hypothesis";
         video.style.setProperty("opacity", "1", "important");
         video.style.setProperty("position", "fixed", "important");
         video.style.setProperty("inset", "0", "important");
-        video.style.setProperty("width", "100vw", "important");
-        video.style.setProperty("height", "100dvh", "important");
+        video.style.setProperty("width", "var(--scanner-width)", "important");
+        video.style.setProperty("height", "var(--scanner-height)", "important");
         video.style.setProperty("object-fit", "cover", "important");
         video.style.setProperty("z-index", "0", "important");
         video.play().catch(() => {});
       };
+
+      syncViewport();
+      window.addEventListener("resize", syncViewport);
+      window.addEventListener("orientationchange", () => setTimeout(syncViewport, 300));
+      window.visualViewport?.addEventListener("resize", syncViewport);
+      window.visualViewport?.addEventListener("scroll", syncViewport);
 
       window.addEventListener("camera-init", () => {
         setStatus("Camera ready - scan Hiro marker");
@@ -106,6 +137,7 @@ const title = "Basic AR Test | The Kali Hypothesis";
         setTimeout(forceVideoVisible, 600);
         setTimeout(forceVideoVisible, 1400);
         setTimeout(forceVideoVisible, 2400);
+        setTimeout(syncViewport, 3200);
       });
 
       close?.addEventListener("click", () => location.reload());
