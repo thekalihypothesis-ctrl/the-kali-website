@@ -6,54 +6,109 @@ const title = "Basic AR Test | The Kali Hypothesis";
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>{title}</title>
     <script is:inline src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script is:inline src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   </head>
   <body>
-    <div id="status">Scan the Hiro marker</div>
+    <div id="landing">
+      <h1>Basic AR Test</h1>
+      <p>Use the Hiro marker. This page only tests camera + one red cube.</p>
+      <button id="start" type="button">Launch Camera</button>
+    </div>
 
-    <a-scene
-      embedded
-      arjs="sourceType: webcam; debugUIEnabled: false;"
-      renderer="logarithmicDepthBuffer: true; antialias: true;"
-      vr-mode-ui="enabled: false"
-      loading-screen="enabled: false"
-    >
-      <a-marker preset="hiro" emitevents="true">
-        <a-box
-          position="0 0.5 0"
-          rotation="0 45 0"
-          color="#ff0000"
-          material="opacity: 0.9;"
-          animation="property: rotation; to: 0 405 0; loop: true; dur: 3000; easing: linear"
-        ></a-box>
-      </a-marker>
+    <div id="scene-root"></div>
+    <div id="status">Waiting</div>
+    <button id="close" type="button" aria-label="Close">x</button>
 
-      <a-entity camera></a-entity>
-    </a-scene>
+    <template id="scene-template">
+      <a-scene
+        embedded
+        arjs="sourceType: webcam; sourceWidth: 480; sourceHeight: 640; displayWidth: 480; displayHeight: 640; debugUIEnabled: false;"
+        renderer="logarithmicDepthBuffer: true; antialias: true; alpha: true;"
+        vr-mode-ui="enabled: false"
+        loading-screen="enabled: false"
+      >
+        <a-marker preset="hiro" emitevents="true">
+          <a-box
+            position="0 0.5 0"
+            rotation="0 45 0"
+            color="#ff0000"
+            material="opacity: 0.95;"
+            animation="property: rotation; to: 0 405 0; loop: true; dur: 3000; easing: linear"
+          ></a-box>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+      </a-scene>
+    </template>
 
     <script is:inline>
+      const landing = document.getElementById("landing");
+      const root = document.getElementById("scene-root");
       const status = document.getElementById("status");
+      const start = document.getElementById("start");
+      const close = document.getElementById("close");
+      const template = document.getElementById("scene-template");
+
+      const setStatus = (message) => {
+        if (status) status.textContent = message;
+      };
+
+      const forceVideoVisible = () => {
+        const video = document.querySelector("#arjs-video");
+        if (!(video instanceof HTMLVideoElement)) return;
+
+        video.style.setProperty("display", "block", "important");
+        video.style.setProperty("visibility", "visible", "important");
+        video.style.setProperty("opacity", "1", "important");
+        video.style.setProperty("position", "fixed", "important");
+        video.style.setProperty("inset", "0", "important");
+        video.style.setProperty("width", "100vw", "important");
+        video.style.setProperty("height", "100dvh", "important");
+        video.style.setProperty("object-fit", "cover", "important");
+        video.style.setProperty("z-index", "0", "important");
+        video.play().catch(() => {});
+      };
 
       window.addEventListener("camera-init", () => {
-        if (status) status.textContent = "Camera ready - scan Hiro marker";
+        setStatus("Camera ready - scan Hiro marker");
+        forceVideoVisible();
       });
 
       window.addEventListener("camera-error", (event) => {
-        if (status) status.textContent = `Camera error: ${event.error?.name || "unknown"}`;
+        setStatus(`Camera error: ${event.error?.name || "unknown"}`);
       });
 
-      window.addEventListener("DOMContentLoaded", () => {
-        const marker = document.querySelector("a-marker");
-        marker?.addEventListener("markerFound", () => {
-          if (status) status.textContent = "Hiro marker detected";
-        });
-        marker?.addEventListener("markerLost", () => {
-          if (status) status.textContent = "Scan the Hiro marker";
-        });
+      window.addEventListener("arjs-video-loaded", () => {
+        setStatus("Camera video loaded - scan Hiro marker");
+        forceVideoVisible();
       });
+
+      start?.addEventListener("click", () => {
+        if (!root || !(template instanceof HTMLTemplateElement)) return;
+
+        landing?.remove();
+        close?.classList.add("visible");
+        setStatus("Starting camera...");
+
+        if (!root.querySelector("a-scene")) {
+          root.appendChild(template.content.cloneNode(true));
+
+          setTimeout(() => {
+            const marker = document.querySelector("a-marker");
+            marker?.addEventListener("markerFound", () => setStatus("Hiro marker detected"));
+            marker?.addEventListener("markerLost", () => setStatus("Scan the Hiro marker"));
+          }, 800);
+        }
+
+        setTimeout(forceVideoVisible, 600);
+        setTimeout(forceVideoVisible, 1400);
+        setTimeout(forceVideoVisible, 2400);
+      });
+
+      close?.addEventListener("click", () => location.reload());
     </script>
   </body>
 </html>
@@ -66,6 +121,73 @@ const title = "Basic AR Test | The Kali Hypothesis";
     height: 100%;
     overflow: hidden;
     background: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+  }
+
+  #landing {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 24px;
+    background: #000;
+    text-align: center;
+  }
+
+  #landing h1 {
+    font-size: 32px;
+    line-height: 1;
+  }
+
+  #landing p {
+    max-width: 320px;
+    color: #aaa;
+    font: 14px "Courier New", monospace;
+    line-height: 1.5;
+  }
+
+  #start {
+    min-height: 52px;
+    border: 0;
+    border-radius: 4px;
+    background: #e8431c;
+    color: #fff;
+    font-weight: 700;
+    padding: 0 28px;
+    text-transform: uppercase;
+  }
+
+  #scene-root,
+  a-scene,
+  canvas.a-canvas {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+  }
+
+  #scene-root {
+    z-index: 1;
+  }
+
+  canvas.a-canvas {
+    z-index: 2 !important;
+    background: transparent !important;
+  }
+
+  #arjs-video,
+  video {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    object-fit: cover !important;
+    z-index: 0 !important;
   }
 
   #status {
@@ -80,5 +202,24 @@ const title = "Basic AR Test | The Kali Hypothesis";
     text-align: center;
     text-shadow: 0 1px 3px #000;
     pointer-events: none;
+  }
+
+  #close {
+    position: fixed;
+    top: max(12px, env(safe-area-inset-top));
+    right: 12px;
+    z-index: 25;
+    display: none;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 20px;
+  }
+
+  #close.visible {
+    display: block;
   }
 </style>
