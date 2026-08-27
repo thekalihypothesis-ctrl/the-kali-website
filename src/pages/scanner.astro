@@ -50,13 +50,13 @@ const description = "The Kali Hypothesis mobile marker scanner.";
       <p class="note">Camera permission required / Works in Chrome and Safari</p>
     </div>
 
-    <template id="ar-scene-template">
+    <div id="ar-scene-wrapper">
       <a-scene
         id="main-scene"
         embedded
         arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
         vr-mode-ui="enabled: false"
-        renderer="alpha: true; logarithmicDepthBuffer: true; antialias: true;"
+        renderer="logarithmicDepthBuffer: true; antialias: true;"
         loading-screen="enabled: false"
       >
         <a-assets>
@@ -67,7 +67,6 @@ const description = "The Kali Hypothesis mobile marker scanner.";
           id="custom-marker"
           type="pattern"
           url="/ar/pattern.patt"
-          emitevents="true"
           smooth="true"
           smoothCount="10"
           smoothTolerance="0.01"
@@ -77,22 +76,23 @@ const description = "The Kali Hypothesis mobile marker scanner.";
             id="cover-entity"
             gltf-model="#cover-model"
             position="0 0.02 0"
-            scale="1 1 1"
-            rotation="0 0 0"
+            scale="0.5 0.5 0.5"
+            rotation="-90 0 0"
+            animation="property: rotation; from: -90 0 0; to: -90 360 0; loop: true; dur: 6000; easing: linear"
           ></a-entity>
           <a-sphere
             id="tracking-test-sphere"
-            position="0 0.7 0"
-            radius="0.28"
+            position="0 0.8 0"
+            radius="0.35"
             color="#00ff66"
-            material="shader: flat;"
+            material="shader: flat; depthTest: false;"
           ></a-sphere>
           <a-box
             id="tracking-test-cube"
-            position="0 0.45 0"
-            scale="0.45 0.45 0.45"
+            position="0 0.35 0"
+            scale="0.35 0.35 0.35"
             color="#e8431c"
-            material="shader: flat;"
+            material="shader: flat; depthTest: false;"
           ></a-box>
           <a-light type="ambient" intensity="0.8"></a-light>
           <a-light type="directional" position="1 2 1" intensity="1.2"></a-light>
@@ -100,9 +100,6 @@ const description = "The Kali Hypothesis mobile marker scanner.";
 
         <a-entity camera></a-entity>
       </a-scene>
-    </template>
-
-    <div id="ar-scene-wrapper">
     </div>
 
     <div id="hud">
@@ -129,7 +126,6 @@ const description = "The Kali Hypothesis mobile marker scanner.";
       const statusText = document.getElementById("status-text");
       const statusDot = document.getElementById("status-dot");
       const btnStart = document.getElementById("btn-start");
-      const sceneTemplate = document.getElementById("ar-scene-template");
 
       const syncViewportSize = () => {
         const viewport = window.visualViewport;
@@ -191,27 +187,6 @@ const description = "The Kali Hypothesis mobile marker scanner.";
         video.play().catch((error) => {
           console.error("VIDEO PLAY ERROR", error);
         });
-      };
-
-      const resizeArScene = () => {
-        const scene = document.querySelector("a-scene");
-        const canvas = document.querySelector(".a-canvas");
-
-        if (scene && scene.renderer) {
-          scene.renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        if (canvas instanceof HTMLCanvasElement) {
-          canvas.style.setProperty("display", "block", "important");
-          canvas.style.setProperty("visibility", "visible", "important");
-          canvas.style.setProperty("opacity", "1", "important");
-          canvas.style.setProperty("position", "fixed", "important");
-          canvas.style.setProperty("inset", "0", "important");
-          canvas.style.setProperty("width", "100vw", "important");
-          canvas.style.setProperty("height", "100vh", "important");
-          canvas.style.setProperty("z-index", "10", "important");
-          canvas.style.setProperty("background", "transparent", "important");
-        }
       };
 
       window.addEventListener("camera-init", (event) => {
@@ -277,6 +252,8 @@ const description = "The Kali Hypothesis mobile marker scanner.";
         }, 1200);
       };
 
+      document.addEventListener("DOMContentLoaded", bindMarkerEvents);
+
       btnStart?.addEventListener("click", () => {
         if (!landing || !sceneWrap || !hud || !scanRing || !btnClose) return;
         if (!window["AFRAME"]) {
@@ -294,16 +271,9 @@ const description = "The Kali Hypothesis mobile marker scanner.";
         scanRing.style.display = "block";
         btnClose.style.display = "flex";
 
-        if (sceneTemplate instanceof HTMLTemplateElement && !sceneWrap.querySelector("a-scene")) {
-          sceneWrap.appendChild(sceneTemplate.content.cloneNode(true));
-          bindMarkerEvents();
-          setTimeout(forceCameraLayer, 500);
-          setTimeout(forceCameraLayer, 1200);
-          setTimeout(forceCameraLayer, 2200);
-          setTimeout(resizeArScene, 500);
-          setTimeout(resizeArScene, 1200);
-          setTimeout(resizeArScene, 2200);
-        }
+        setTimeout(forceCameraLayer, 500);
+        setTimeout(forceCameraLayer, 1200);
+        setTimeout(forceCameraLayer, 2200);
       });
 
       btnClose?.addEventListener("click", () => location.reload());
@@ -460,7 +430,7 @@ const description = "The Kali Hypothesis mobile marker scanner.";
   #ar-scene-wrapper {
     position: fixed;
     inset: 0;
-    z-index: 0;
+    z-index: 10;
     display: none;
     width: var(--scanner-width);
     height: var(--scanner-height);
@@ -498,18 +468,15 @@ const description = "The Kali Hypothesis mobile marker scanner.";
   .a-canvas {
     position: fixed !important;
     inset: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: transparent !important;
-    z-index: 10 !important;
+    width: var(--scanner-width) !important;
+    height: var(--scanner-height) !important;
   }
 
   a-scene {
     position: fixed !important;
     inset: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: transparent !important;
+    width: var(--scanner-width) !important;
+    height: var(--scanner-height) !important;
     z-index: 10 !important;
   }
 
