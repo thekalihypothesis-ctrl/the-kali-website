@@ -1,0 +1,75 @@
+---
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+
+// Fixed canvas size — matches the source artwork (1920x1080).
+// No media queries: every screen sees the same layout, just
+// scrollable/pinch-zoomable on smaller viewports.
+const CANVAS_WIDTH = 1920;
+const CANVAS_HEIGHT = 1080;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} · The Kali Hypothesis</title>
+  </head>
+  <body>
+    <div class="stage-wrapper">
+      <div class="stage" style={`width:${CANVAS_WIDTH}px;height:${CANVAS_HEIGHT}px;`}>
+        <slot />
+      </div>
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --ink: #0a0a0a;
+    --paper: #f5f5f0;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  /* Intentionally NOT centering the stage on narrow screens with
+     any layout tricks that depend on breakpoints — this wrapper
+     just lets the fixed-size stage scroll/pinch-zoom naturally. */
+  .stage-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: auto;
+    display: flex;
+    justify-content: center;
+    background: var(--ink);
+  }
+
+  .stage {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .stage img.scene-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+</style>

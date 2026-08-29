@@ -1,7 +1,49 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import OfficeScene from "../components/home/OfficeScene.astro";
+import MainLayout from '../layouts/MainLayout.astro';
 ---
-<Layout title="Kali Hypothesis — Collectibles">
-  <OfficeScene />
-</Layout>
+<MainLayout title="Collectibles">
+  <div class="case-file">
+    <a class="back-link" href="/">&larr; Back to the office</a>
+    <h1>Collectibles</h1>
+    <p>
+      Placeholder content for the "Collectibles" section. Replace this with
+      the real copy, images, or clues for this part of the case.
+    </p>
+  </div>
+</MainLayout>
+
+<style>
+  .case-file {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 80px 120px;
+    background: #0a0a0a;
+    color: #f5f5f0;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 40px;
+    color: #f5f5f0;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+
+  .back-link:hover {
+    opacity: 0.7;
+  }
+
+  h1 {
+    font-size: 48px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 24px;
+  }
+
+  p {
+    max-width: 800px;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+</style>

@@ -1,0 +1,49 @@
+---
+import ClickableRegion from './ClickableRegion.astro';
+import { hotspots } from '../data/hotspots.js';
+
+// Append ?debug=1 to any URL to see red outlines over every
+// hotspot — handy while you're tuning coordinates against your
+// real cropped assets.
+const debug = Astro.url.searchParams.get('debug') === '1';
+---
+<div class="office-scene">
+  <!--
+    Using the COMPLETE labeled scene for now (cabinet labels, bookshelf
+    labels, "NEXT EVENT" text all baked in) so the site is visually
+    functional immediately, with invisible clickable regions on top.
+
+    Once you have your real per-element cropped PNGs, swap this to
+    scene-base.jpg (the empty room) and layer each element as its own
+    positioned <img> inside its ClickableRegion — that unlocks per-
+    element hover states (e.g. a drawer glowing on hover) instead of
+    just a highlighted box.
+  -->
+  <img
+    class="scene-bg"
+    src="/images/office/scene-complete.jpg"
+    alt="The Kali Hypothesis — detective office"
+  />
+
+  {hotspots.map((spot) => (
+    <ClickableRegion
+      href={spot.href}
+      label={spot.label}
+      x={spot.x}
+      y={spot.y}
+      w={spot.w}
+      h={spot.h}
+      debug={debug}
+    />
+  ))}
+</div>
+
+<style>
+  .office-scene {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>
