@@ -5,8 +5,8 @@ interface Props {
 const { title } = Astro.props;
 
 // Fixed canvas size — matches the source artwork (1920x1080).
-// No media queries: every screen sees the same layout, just
-// scrollable/pinch-zoomable on smaller viewports.
+// The complete canvas is scaled uniformly to fit each viewport,
+// preserving the artwork and hotspot coordinates at every size.
 const CANVAS_WIDTH = 1920;
 const CANVAS_HEIGHT = 1080;
 ---
@@ -19,10 +19,32 @@ const CANVAS_HEIGHT = 1080;
   </head>
   <body>
     <div class="stage-wrapper">
-      <div class="stage" style={`width:${CANVAS_WIDTH}px;height:${CANVAS_HEIGHT}px;`}>
+      <div
+        class="stage"
+        data-stage
+        style={`width:${CANVAS_WIDTH}px;height:${CANVAS_HEIGHT}px;`}
+      >
         <slot />
       </div>
     </div>
+
+    <script is:inline define:vars={{ CANVAS_WIDTH, CANVAS_HEIGHT }}>
+      const stage = document.querySelector('[data-stage]');
+
+      const fitStageToViewport = () => {
+        const scale = Math.min(
+          window.innerWidth / CANVAS_WIDTH,
+          window.innerHeight / CANVAS_HEIGHT,
+        );
+
+        stage.style.setProperty('--stage-scale', String(scale));
+        stage.dataset.fitted = 'true';
+      };
+
+      fitStageToViewport();
+      window.addEventListener('resize', fitStageToViewport, { passive: true });
+      window.addEventListener('orientationchange', fitStageToViewport, { passive: true });
+    </script>
   </body>
 </html>
 
@@ -40,26 +62,35 @@ const CANVAS_HEIGHT = 1080;
   body {
     margin: 0;
     padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     background: var(--ink);
     color: var(--paper);
     font-family: 'Courier New', Courier, monospace;
   }
 
-  /* Intentionally NOT centering the stage on narrow screens with
-     any layout tricks that depend on breakpoints — this wrapper
-     just lets the fixed-size stage scroll/pinch-zoom naturally. */
   .stage-wrapper {
-    width: 100%;
-    min-height: 100vh;
-    overflow-x: auto;
-    display: flex;
-    justify-content: center;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
     background: var(--ink);
   }
 
   .stage {
-    position: relative;
-    flex-shrink: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(var(--stage-scale, 0));
+    transform-origin: center;
+    opacity: 0;
+  }
+
+  .stage[data-fitted='true'] {
+    opacity: 1;
   }
 
   .stage img.scene-bg {
