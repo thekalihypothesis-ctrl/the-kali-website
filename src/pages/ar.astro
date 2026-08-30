@@ -6,9 +6,9 @@ import ARLayout from '../layouts/ARLayout.astro';
 
   <a-scene
     embedded
-    arjs="sourceType: webcam; debugUIEnabled: false;"
+    arjs="sourceType: webcam; debugUIEnabled: false; sourceWidth: 1280; sourceHeight: 960; displayWidth: 1280; displayHeight: 960;"
     vr-mode-ui="enabled: false"
-    renderer="logarithmicDepthBuffer: true;"
+    renderer="logarithmicDepthBuffer: true; alpha: true;"
   >
     <a-marker type="pattern" url="/markers/pattern.patt">
       <a-entity
@@ -64,6 +64,25 @@ import ARLayout from '../layouts/ARLayout.astro';
     });
   </script>
 </ARLayout>
+
+<style is:global>
+  #error-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    max-width: 80vw;
+    padding: 20px 24px;
+    background: rgba(20, 0, 0, 0.9);
+    color: #ff6b6b;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+    white-space: pre-wrap;
+    border: 1px solid #ff6b6b;
+    border-radius: 4px;
+  }
+</style>
 
 <style>
   .exit-ar {
