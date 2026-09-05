@@ -23,6 +23,45 @@ import ARLayout from '../layouts/ARLayout.astro';
     <a-entity camera></a-entity>
   </a-scene>
 
+  <div id="error-popup" hidden></div>
+
+  <script is:inline>
+    // #error-popup was styled but never actually shown by anything —
+    // AR.js catches its own getUserMedia rejection internally and just
+    // logs it, so it never reaches window's error/unhandledrejection
+    // handlers. Wrap getUserMedia ourselves, before AR.js calls it, so
+    // camera failures are visible instead of a silent black screen.
+    (function () {
+      var popup = document.getElementById('error-popup');
+      function showError(message) {
+        popup.textContent = message;
+        popup.hidden = false;
+      }
+
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        var originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+        navigator.mediaDevices.getUserMedia = function (constraints) {
+          return originalGetUserMedia(constraints).catch(function (err) {
+            showError('Camera error: ' + err.name + (err.message ? ' — ' + err.message : ''));
+            throw err;
+          });
+        };
+      } else {
+        showError('Camera API unavailable — this needs HTTPS (or localhost) and a browser that supports getUserMedia.');
+      }
+
+      window.addEventListener('error', function (e) {
+        showError('Error: ' + e.message);
+      });
+
+      setTimeout(function () {
+        if (!document.querySelector('video') && popup.hidden) {
+          showError('Camera never attached. Check the permission prompt and reload.');
+        }
+      }, 8000);
+    })();
+  </script>
+
   <script is:inline>
     // Drag-to-rotate component, carried over from the earlier
     // marker-ar project. Attach with drag-rotate="" on any entity.
