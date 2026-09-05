@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AR.js isolation test</title>
+
+<!--
+  Pinned versions. A-Frame 1.4.x + AR.js 3.4.x is a known-good pairing.
+  Version drift between these two is itself a common cause of a black screen,
+  so do not swap these for "latest" while debugging.
+-->
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    /* Deliberately NOT setting a background colour here.
+       An opaque background on html/body is one of the ways the
+       camera feed gets hidden behind the page. */
+  }
+
+  /* AR.js injects its own <video>. These rules make sure nothing
+     in this file competes with it for stacking order. */
+  .a-canvas { z-index: 1 !important; }
+  video     { z-index: 0 !important; }
+
+  #log {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    max-height: 45vh;
+    overflow-y: auto;
+    margin: 0;
+    padding: 10px 12px;
+    font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace;
+    color: #eaeaea;
+    background: rgba(0, 0, 0, 0.78);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  #log b { color: #7ee787; }
+  #log i { color: #ff7b72; font-style: normal; }
+  #log em { color: #d29922; font-style: normal; }
+</style>
+</head>
+<body>
+
+<div id="log">starting…</div>
+
+<script>
+  // ---- On-screen logging, because you cannot read a phone console. ----
+  var logEl = document.getElementById('log');
+  var lines = [];
+
+  function say(msg, kind) {
+    var tag = kind === 'ok' ? 'b' : kind === 'err' ? 'i' : kind === 'warn' ? 'em' : 'span';
+    lines.push('<' + tag + '>' + msg + '</' + tag + '>');
+    logEl.innerHTML = lines.join('\n');
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  // Catch anything that throws during library init.
+  window.addEventListener('error', function (e) {
+    say('THROWN: ' + e.message + '  @' + (e.filename || '?') + ':' + (e.lineno || '?'), 'err');
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    say('REJECTED: ' + (e.reason && e.reason.message ? e.reason.message : e.reason), 'err');
+  });
+
+  say('page: ' + location.href);
+  say('secure context: ' + window.isSecureContext);
+  say('A-Frame loaded: ' + (typeof AFRAME !== 'undefined'), typeof AFRAME !== 'undefined' ? 'ok' : 'err');
+  say('AR.js component present: ' + (typeof AFRAME !== 'undefined' && !!AFRAME.components.arjs),
+      (typeof AFRAME !== 'undefined' && !!AFRAME.components.arjs) ? 'ok' : 'err');
+  say('getUserMedia available: ' + !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia));
+
+  // ---- Do the two real assets actually exist on the deployed site? ----
+  // A 404 here is the single most likely cause of your black screen.
+  ['/models/cover.glb', '/markers/pattern.patt'].forEach(function (path) {
+    fetch(path, { method: 'GET' })
+      .then(function (r) {
+        var type = r.headers.get('content-type') || 'unknown';
+        // A static host that returns your 404 page will answer 200 with text/html.
+        var lying = r.ok && type.indexOf('text/html') !== -1;
+        if (!r.ok) {
+          say('MISSING ' + path + ' → HTTP ' + r.status, 'err');
+        } else if (lying) {
+          say('MISSING ' + path + ' → 200 but content-type is ' + type +
+              ' (that is your error page, not the file)', 'err');
+        } else {
+          say('found ' + path + ' → ' + r.status + ' ' + type, 'ok');
+        }
+      })
+      .catch(function (err) {
+        say('FETCH FAILED ' + path + ' → ' + err.message, 'err');
+      });
+  });
+</script>
+
+<!--
+  renderer="alpha: true" is what lets the camera feed show through the canvas.
+  vr-mode-ui disabled so A-Frame's headset button does not overlay things.
+  sourceType: webcam is explicit rather than inferred.
+-->
+<a-scene
+  embedded
+  vr-mode-ui="enabled: false"
+  renderer="alpha: true; antialias: true"
+  arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix">
+
+  <!-- Preset 'hiro' marker: no .patt file needed, so this tests the
+       pipeline independently of your own marker asset. -->
+  <a-marker preset="hiro">
+    <a-box position="0 0.5 0" material="color: #4d9de0;"></a-box>
+  </a-marker>
+
+  <a-entity camera></a-entity>
+</a-scene>
+
+<script>
+  var scene = document.querySelector('a-scene');
+  var marker = document.querySelector('a-marker');
+
+  scene.addEventListener('loaded', function () {
+    say('a-scene loaded', 'ok');
+  });
+
+  scene.addEventListener('arjs-video-loaded', function () {
+    say('camera video element attached', 'ok');
+    var v = document.querySelector('video');
+    if (v) {
+      say('video size: ' + v.videoWidth + '×' + v.videoHeight);
+      if (v.videoWidth === 0) {
+        say('video is 0 wide — stream attached but no frames', 'warn');
+      }
+    }
+  });
+
+  marker.addEventListener('markerFound', function () { say('MARKER FOUND', 'ok'); });
+  marker.addEventListener('markerLost',  function () { say('marker lost', 'warn'); });
+
+  // If the camera never attaches, say so rather than sitting silent.
+  setTimeout(function () {
+    if (!document.querySelector('video')) {
+      say('No <video> after 8s — AR.js never got the camera. ' +
+          'Check the permission prompt and the errors above.', 'err');
+    }
+  }, 8000);
+</script>
+
+</body>
+</html>
