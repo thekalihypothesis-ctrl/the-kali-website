@@ -78,8 +78,11 @@
   say('page: ' + location.href);
   say('secure context: ' + window.isSecureContext);
   say('A-Frame loaded: ' + (typeof AFRAME !== 'undefined'), typeof AFRAME !== 'undefined' ? 'ok' : 'err');
-  say('AR.js component present: ' + (typeof AFRAME !== 'undefined' && !!AFRAME.components.arjs),
-      (typeof AFRAME !== 'undefined' && !!AFRAME.components.arjs) ? 'ok' : 'err');
+  // AR.js registers 'arjs' as an A-Frame *system* (scene-level), not a
+  // component — checking AFRAME.components.arjs is always false even
+  // when AR.js loaded and initialized correctly.
+  var arjsLoaded = typeof AFRAME !== 'undefined' && !!AFRAME.systems.arjs;
+  say('AR.js system present: ' + arjsLoaded, arjsLoaded ? 'ok' : 'err');
   say('getUserMedia available: ' + !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia));
 
   // ---- Do the two real assets actually exist on the deployed site? ----
