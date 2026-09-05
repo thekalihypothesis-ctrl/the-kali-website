@@ -10,7 +10,11 @@ import ARLayout from '../layouts/ARLayout.astro';
     vr-mode-ui="enabled: false"
     renderer="logarithmicDepthBuffer: true; alpha: true;"
   >
-    <a-marker type="pattern" url="/markers/pattern.patt">
+    <!-- TEMP: swapped from `type="pattern" url="/markers/pattern.patt"` to
+         the built-in hiro preset to isolate whether tracking itself works
+         on this page, independent of the custom marker asset. Revert once
+         confirmed. -->
+    <a-marker preset="hiro">
       <a-entity
         id="cover-model"
         gltf-model="/models/cover.glb"
