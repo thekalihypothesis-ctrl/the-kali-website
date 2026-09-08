@@ -75,21 +75,9 @@ import ARLayout from '../layouts/ARLayout.astro';
         this.el.addEventListener('model-loaded', () => {
           const mesh = this.el.getObject3D('mesh');
           if (!mesh) return;
-          // Measure the mesh's bounding box in its own local frame, not
-          // world space: an untracked a-marker can leave its ancestor
-          // transform degenerate (e.g. zero-scaled to stay hidden before
-          // the first detection), and inverting that produced garbage that
-          // sent the model off-screen entirely. Reparenting under a bare,
-          // untransformed scratch object sidesteps the marker/tracking
-          // state altogether — matrixWorld here reflects only the mesh's
-          // own subtree.
-          const scratch = new THREE.Object3D();
-          scratch.add(mesh);
-          scratch.updateMatrixWorld(true);
           const box = new THREE.Box3().setFromObject(mesh);
           const center = box.getCenter(new THREE.Vector3());
           mesh.position.sub(center);
-          this.el.object3D.add(mesh);
         });
       },
     });
