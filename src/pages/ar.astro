@@ -14,9 +14,10 @@ import ARLayout from '../layouts/ARLayout.astro';
       <a-entity
         id="cover-model"
         gltf-model="/models/cover.glb"
-        scale="0.05 0.05 0.05"
+        scale="0.8 0.8 0.8"
         position="0 0 0"
         drag-rotate
+        center-on-marker
       ></a-entity>
     </a-marker>
 
@@ -60,6 +61,26 @@ import ARLayout from '../layouts/ARLayout.astro';
         }
       }, 8000);
     })();
+  </script>
+
+  <script is:inline>
+    // cover.glb's own geometry isn't centered on its origin (its authored
+    // pivot sits well off its bounding-box center), so at position="0 0 0"
+    // most of the model renders offset from the marker instead of on it.
+    // Recenter the loaded mesh onto the entity's origin at runtime instead
+    // of hardcoding an offset, so this keeps working if the model is
+    // re-exported. Attach with center-on-marker="" on a gltf-model entity.
+    AFRAME.registerComponent('center-on-marker', {
+      init: function () {
+        this.el.addEventListener('model-loaded', () => {
+          const mesh = this.el.getObject3D('mesh');
+          if (!mesh) return;
+          const box = new THREE.Box3().setFromObject(mesh);
+          const center = box.getCenter(new THREE.Vector3());
+          mesh.position.sub(center);
+        });
+      },
+    });
   </script>
 
   <script is:inline>
