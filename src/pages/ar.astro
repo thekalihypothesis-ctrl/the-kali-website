@@ -75,9 +75,17 @@ import ARLayout from '../layouts/ARLayout.astro';
         this.el.addEventListener('model-loaded', () => {
           const mesh = this.el.getObject3D('mesh');
           if (!mesh) return;
+          this.el.object3D.updateMatrixWorld(true);
           const box = new THREE.Box3().setFromObject(mesh);
-          const center = box.getCenter(new THREE.Vector3());
-          mesh.position.sub(center);
+          const worldCenter = box.getCenter(new THREE.Vector3());
+          // Box3 gives a world-space point (already carrying this entity's
+          // own scale and whatever the marker's current tracking transform
+          // is) — convert it back into the entity's local space before
+          // subtracting from mesh.position, which is local. Subtracting
+          // world units from a local offset directly was the bug: it left
+          // the same proportional drift instead of removing it.
+          const localCenter = this.el.object3D.worldToLocal(worldCenter);
+          mesh.position.sub(localCenter);
         });
       },
     });
