@@ -7,15 +7,18 @@ interface Props {
   w: number;
   h: number;
   debug?: boolean;
+  note?: { title: string; body: string[] };
 }
-const { href, label, x, y, w, h, debug } = Astro.props;
+const { href, label, x, y, w, h, debug, note } = Astro.props;
 ---
 <a
-  class="hotspot"
+  class={`hotspot${note ? ' hotspot--note' : ''}`}
   href={href}
   aria-label={label}
   style={`left:${x}px; top:${y}px; width:${w}px; height:${h}px;`}
   data-debug={debug ? 'true' : 'false'}
+  data-note-title={note?.title}
+  data-note-body={note ? JSON.stringify(note.body) : undefined}
 >
 </a>
 

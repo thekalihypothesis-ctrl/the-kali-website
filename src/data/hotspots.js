@@ -24,6 +24,14 @@ export const hotspots = [
     y: 315,
     w: 210,
     h: 185,
+    note: {
+      title: 'About',
+      body: [
+        'The Kali Hypothesis is an ARG+ project that blends mystery, science, and real-world exploration.',
+        'Players join the Detectives to uncover clues, solve puzzles, and explore how stories, behaviour, and information interconnect.',
+        'Guided by Kali – the ghost cat – the project spans location-based adventures, interactive media, and original research, inviting you to look closer, question deeper, and discover the bigger picture.',
+      ],
+    },
   },
   {
     id: 'story',
@@ -33,6 +41,11 @@ export const hotspots = [
     y: 500,
     w: 210,
     h: 155,
+    note: {
+      title: 'Story',
+      // TODO: placeholder — swap in the real case narrative once written.
+      body: ['Placeholder content for the "Story" section. Replace this with the real case narrative.'],
+    },
   },
   {
     id: 'shows',
@@ -42,6 +55,11 @@ export const hotspots = [
     y: 655,
     w: 210,
     h: 155,
+    note: {
+      title: 'Shows',
+      // TODO: placeholder — swap in real event/show details once confirmed.
+      body: ['Placeholder content for the "Shows" section. Replace this with real event details.'],
+    },
   },
   {
     id: 'collectibles',
@@ -51,6 +69,11 @@ export const hotspots = [
     y: 810,
     w: 210,
     h: 245,
+    note: {
+      title: 'Collectibles',
+      // TODO: placeholder — swap in real collectible details once confirmed.
+      body: ['Placeholder content for the "Collectibles" section. Replace this with real collectible details.'],
+    },
   },
   {
     id: 'monitor',

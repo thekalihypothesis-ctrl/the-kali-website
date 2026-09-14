@@ -1,5 +1,6 @@
 ---
 import ClickableRegion from './ClickableRegion.astro';
+import DetectiveNote from './DetectiveNote.astro';
 import { hotspots } from '../data/hotspots.js';
 
 // Append ?debug=1 to any URL to see red outlines over every
@@ -34,8 +35,11 @@ const debug = Astro.url.searchParams.get('debug') === '1';
       w={spot.w}
       h={spot.h}
       debug={debug}
+      note={spot.note}
     />
   ))}
+
+  <DetectiveNote />
 </div>
 
 <style>
