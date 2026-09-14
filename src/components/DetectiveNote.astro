@@ -81,7 +81,7 @@
     z-index: 50;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.3s ease;
   }
 
   .detective-note-overlay.is-open {
@@ -105,8 +105,10 @@
     bottom: -10%;
     width: 58.8%; /* 1.4x the original 42% */
     aspect-ratio: 2208 / 2312;
-    transform: translateY(24px);
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Starts mostly below its own frame so the hand visibly rises up
+       into place, rather than just nudging in from a few px away. */
+    transform: translateY(70%);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .detective-note-overlay.is-open .detective-note-card {
