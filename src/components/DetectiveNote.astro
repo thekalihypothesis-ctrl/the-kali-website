@@ -98,7 +98,11 @@
   .detective-note-card {
     position: absolute;
     left: 16%;
-    bottom: -12.5%;
+    /* At 1.4x the card is ~109.5% of the frame height -- taller than
+       the visible area no matter where it sits. This is as high as it
+       can go while keeping the top (paperclip/title) fully clear; the
+       remaining overflow crops the sleeve at the bottom instead. */
+    bottom: -10%;
     width: 58.8%; /* 1.4x the original 42% */
     aspect-ratio: 2208 / 2312;
     transform: translateY(24px);
