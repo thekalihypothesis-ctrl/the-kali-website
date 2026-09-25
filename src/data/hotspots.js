@@ -43,8 +43,11 @@ export const hotspots = [
     h: 155,
     note: {
       title: 'Story',
-      // TODO: placeholder — swap in the real case narrative once written.
-      body: ['Placeholder content for the "Story" section. Replace this with the real case narrative.'],
+      body: [
+        'Six months ago, a case file arrived with no sender. Inside: a photograph of an office that didn’t exist, a maze with no exit drawn in the margins, and a name written in the corner — Kali.',
+        'The Detectives who took the case found the office wasn’t fictional at all. It was real, hidden behind an ordinary door, filled with clues that only made sense once you stopped reading them and started noticing them — a marker left facedown, a drawer that wouldn’t quite close, a photograph that had been moved.',
+        'The case hasn’t closed. It’s still being worked, in public, in real locations, through real objects — this website is one of the filing cabinets. What’s inside gets added to as the Detectives find it.',
+      ],
     },
   },
   {
@@ -57,8 +60,11 @@ export const hotspots = [
     h: 155,
     note: {
       title: 'Shows',
-      // TODO: placeholder — swap in real event/show details once confirmed.
-      body: ['Placeholder content for the "Shows" section. Replace this with real event details.'],
+      body: [
+        'Shows are where the case leaves the screen. Each one is a live, location-based event — part scavenger hunt, part performance — where the Detectives (that’s you) follow a lead into a real place at a real time.',
+        'No two shows run the same script. What you find depends on who shows up, what they notice, and what they choose to do with it — the case reacts to the room, not the other way around.',
+        'Dates and locations get posted here and on the office monitor’s NEXT EVENT feed once they’re locked in. Check back — the window between announcement and show is usually short on purpose.',
+      ],
     },
   },
   {
@@ -71,8 +77,11 @@ export const hotspots = [
     h: 245,
     note: {
       title: 'Collectibles',
-      // TODO: placeholder — swap in real collectible details once confirmed.
-      body: ['Placeholder content for the "Collectibles" section. Replace this with real collectible details.'],
+      body: [
+        'Every case generates evidence, and some of it is built to hold in your hands. The first piece is the case file itself — a printed cover that comes alive under the AR Viewer, revealing the maze hidden inside its artwork.',
+        'Future collectibles follow the same rule: they have to work as physical objects first, digital extensions second. A book that’s actually readable. A marker that’s actually a marker. Nothing exists purely to be scanned.',
+        'What’s been found so far gets listed here as it’s confirmed — check the AR Zone on the shelf for the pieces that are live right now.',
+      ],
     },
   },
   {

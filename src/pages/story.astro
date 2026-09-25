@@ -1,14 +1,17 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import { hotspots } from '../data/hotspots.js';
+
+// Same content as the office popup (see hotspots.js) — this page is
+// what the cat-mask hotspot and any direct /story link land on, so it
+// stays in sync with the popup instead of carrying its own copy.
+const { note } = hotspots.find((spot) => spot.id === 'story');
 ---
-<MainLayout title="Story">
+<MainLayout title={note.title}>
   <div class="case-file">
     <a class="back-link" href="/">&larr; Back to the office</a>
-    <h1>Story</h1>
-    <p>
-      Placeholder content for the "Story" section. Replace this with
-      the real copy, images, or clues for this part of the case.
-    </p>
+    <h1>{note.title}</h1>
+    {note.body.map((paragraph) => <p>{paragraph}</p>)}
   </div>
 </MainLayout>
 

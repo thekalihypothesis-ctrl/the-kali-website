@@ -1,14 +1,17 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import { hotspots } from '../data/hotspots.js';
+
+// Same content as the office popup (see hotspots.js) — kept in sync
+// rather than carrying its own copy, since direct /collectibles links
+// and the desk-sculpture hotspot (no note popup) land on this page.
+const { note } = hotspots.find((spot) => spot.id === 'collectibles');
 ---
-<MainLayout title="Collectibles">
+<MainLayout title={note.title}>
   <div class="case-file">
     <a class="back-link" href="/">&larr; Back to the office</a>
-    <h1>Collectibles</h1>
-    <p>
-      Placeholder content for the "Collectibles" section. Replace this with
-      the real copy, images, or clues for this part of the case.
-    </p>
+    <h1>{note.title}</h1>
+    {note.body.map((paragraph) => <p>{paragraph}</p>)}
   </div>
 </MainLayout>
 
