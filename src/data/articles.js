@@ -1,9 +1,12 @@
-// News & Articles entries, newest first.
+// News & Articles entries, newest first. Each is its own page at
+// /news/<slug> — see src/pages/news/[slug].astro. news.astro is just
+// the index of clickable case-file cards (uses `teaser`, not the full
+// body/sections).
 //
 // Two shapes are supported:
-//  - { tag, title, body: string[] }
+//  - { slug, tag, title, teaser, body: string[] }
 //    A plain article: one paragraph per string.
-//  - { tag, title, dateline, intro: string[], sections: [...] }
+//  - { slug, tag, title, teaser, dateline, intro: string[], sections: [...] }
 //    A glossary/reference-style entry, reproducing a source document's
 //    own structure (sheets of term/tagline/definition) instead of
 //    rewriting it into prose. Each section is
@@ -11,8 +14,10 @@
 
 export const articles = [
   {
+    slug: 'bct-glossary',
     tag: 'Case-Board Glossary',
     title: 'Behaviour Code Theory: Working Glossary',
+    teaser: 'A four-sheet glossary of internal terminology — BCT, BCC, XDU, Quadons — recovered and reproduced sheet by sheet.',
     dateline: '22 September 2026',
     intro: [
       'A four-sheet glossary surfaced among the case materials — internal terminology for something called Behaviour Code Theory (BCT). It reads like documentation for a system still being built, not a finished one: several entries end in "remains to be defined."',
@@ -94,8 +99,10 @@ export const articles = [
     ],
   },
   {
+    slug: 'behaviour-coding',
     tag: 'Research Notes',
     title: 'Behaviour Coding',
+    teaser: 'The idea that patterns of action, not just words, carry meaning — and how the Detectives read them.',
     body: [
       'Behaviour Coding is the layer underneath every clue in this case — the idea that patterns of action, not just words, carry meaning. A hesitation before a choice, a route retraced twice, a message left unsent: the Detectives treat these as data, not noise.',
       'Kali doesn’t speak in sentences. She speaks in sequences — a paw print here, a knocked-over object there — and Behaviour Coding is how those sequences get translated into leads worth following.',

@@ -2,40 +2,27 @@
 import NodeLayout from '../layouts/NodeLayout.astro';
 import { articles } from '../data/articles.js';
 
-// See src/data/articles.js for the two supported article shapes
-// (plain body paragraphs, or a glossary with sections/terms).
+// The index of finds -- each card links to its own page at
+// /news/<slug>, see src/pages/news/[slug].astro and
+// src/data/articles.js.
 ---
 <NodeLayout title="News & Articles">
   <div class="feed">
     <a class="back-link" href="/">&larr; Back to the office</a>
     <h1>News &amp; Articles</h1>
+    <p class="subhead">Case finds, documented and filed as they turn up.</p>
 
-    {articles.map((article) => (
-      <article class="entry">
-        <p class="entry-tag">{article.tag}</p>
-        <h2>{article.title}</h2>
-        {article.dateline && <p class="entry-dateline">{article.dateline}</p>}
-
-        {article.intro?.map((paragraph) => <p>{paragraph}</p>)}
-        {article.body?.map((paragraph) => <p>{paragraph}</p>)}
-
-        {article.sections?.map((section) => (
-          <div class="glossary-section">
-            <h3>{section.heading}</h3>
-            <div class="glossary-grid">
-              {section.terms.map((entry) => (
-                <div class="glossary-term">
-                  <p class="term-name">{entry.term}</p>
-                  <p class="term-tagline">{entry.tagline}</p>
-                  <p class="term-definition">{entry.definition}</p>
-                </div>
-              ))}
-            </div>
-            {section.note && <p class="glossary-note">{section.note}</p>}
-          </div>
-        ))}
-      </article>
-    ))}
+    <div class="card-grid">
+      {articles.map((article) => (
+        <a class="card" href={`/news/${article.slug}`}>
+          <p class="card-tag">{article.tag}</p>
+          <h2>{article.title}</h2>
+          {article.dateline && <p class="card-dateline">{article.dateline}</p>}
+          <p class="card-teaser">{article.teaser}</p>
+          <p class="card-open">Open file &rarr;</p>
+        </a>
+      ))}
+    </div>
   </div>
 </NodeLayout>
 
@@ -61,7 +48,7 @@ import { articles } from '../data/articles.js';
   }
 
   h1 {
-    margin: 0 0 48px;
+    margin: 0 0 8px;
     font-size: 32px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -69,101 +56,65 @@ import { articles } from '../data/articles.js';
     text-shadow: 0 0 12px rgba(77, 250, 255, 0.5);
   }
 
-  .entry {
-    padding-top: 40px;
-    margin-bottom: 40px;
-    border-top: 1px dashed rgba(77, 250, 255, 0.25);
+  .subhead {
+    margin: 0 0 40px;
+    font-size: 15px;
+    color: #777;
   }
 
-  .entry:first-of-type {
-    border-top: none;
-    padding-top: 0;
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
   }
 
-  .entry-tag {
+  .card {
+    display: block;
+    padding: 24px;
+    background: rgba(77, 250, 255, 0.03);
+    border: 1px dashed rgba(77, 250, 255, 0.3);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .card:hover {
+    background: rgba(77, 250, 255, 0.08);
+    border-color: rgba(77, 250, 255, 0.7);
+  }
+
+  .card-tag {
     margin: 0 0 8px;
-    font-size: 13px;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #4dff8f;
-    text-shadow: 0 0 6px rgba(77, 255, 143, 0.35);
   }
 
-  .entry h2 {
-    font-size: 24px;
+  .card h2 {
+    margin: 0 0 8px;
+    font-size: 19px;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
-    margin: 0 0 16px;
-    max-width: 800px;
+    letter-spacing: 0.02em;
     color: #eaeaea;
   }
 
-  .entry-dateline {
-    margin: -8px 0 16px;
-    font-size: 13px;
-    color: #777;
-  }
-
-  .entry p {
-    max-width: 800px;
-    font-size: 16px;
-    line-height: 1.6;
-    margin: 0 0 16px;
-    color: #ccc;
-  }
-
-  .glossary-section {
-    margin-top: 32px;
-  }
-
-  .glossary-section h3 {
-    font-size: 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin: 0 0 16px;
-    padding-bottom: 8px;
-    color: #4dfaff;
-    border-bottom: 1px solid rgba(77, 250, 255, 0.25);
-  }
-
-  .glossary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px;
-  }
-
-  .glossary-term {
-    padding: 14px 16px;
-    border: 1px dashed rgba(77, 250, 255, 0.3);
-    border-radius: 4px;
-  }
-
-  .term-name {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 700;
-    color: #eaeaea;
-  }
-
-  .term-tagline {
-    margin: 2px 0 8px;
+  .card-dateline {
+    margin: 0 0 12px;
     font-size: 12px;
-    font-style: italic;
-    color: #4dff8f;
-    opacity: 0.8;
+    color: #666;
   }
 
-  .term-definition {
-    margin: 0;
+  .card-teaser {
+    margin: 0 0 16px;
     font-size: 14px;
     line-height: 1.5;
-    color: #bbb;
+    color: #aaa;
   }
 
-  .glossary-note {
-    margin: 24px 0 0;
+  .card-open {
+    margin: 0;
     font-size: 13px;
-    font-style: italic;
-    color: #777;
+    color: #4dfaff;
   }
 </style>

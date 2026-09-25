@@ -1,0 +1,153 @@
+---
+import NodeLayout from '../../layouts/NodeLayout.astro';
+import { articles } from '../../data/articles.js';
+
+export function getStaticPaths() {
+  return articles.map((article) => ({
+    params: { slug: article.slug },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+---
+<NodeLayout title={article.title}>
+  <div class="feed">
+    <a class="back-link" href="/news">&larr; Back to News & Articles</a>
+
+    <article class="entry">
+      <p class="entry-tag">{article.tag}</p>
+      <h1>{article.title}</h1>
+      {article.dateline && <p class="entry-dateline">{article.dateline}</p>}
+
+      {article.intro?.map((paragraph) => <p>{paragraph}</p>)}
+      {article.body?.map((paragraph) => <p>{paragraph}</p>)}
+
+      {article.sections?.map((section) => (
+        <div class="glossary-section">
+          <h2>{section.heading}</h2>
+          <div class="glossary-grid">
+            {section.terms.map((entry) => (
+              <div class="glossary-term">
+                <p class="term-name">{entry.term}</p>
+                <p class="term-tagline">{entry.tagline}</p>
+                <p class="term-definition">{entry.definition}</p>
+              </div>
+            ))}
+          </div>
+          {section.note && <p class="glossary-note">{section.note}</p>}
+        </div>
+      ))}
+    </article>
+  </div>
+</NodeLayout>
+
+<style>
+  .feed {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 40px;
+    color: #4dfaff;
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid rgba(77, 250, 255, 0.4);
+  }
+
+  .back-link:hover {
+    opacity: 0.7;
+  }
+
+  .entry-tag {
+    margin: 0 0 8px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #4dff8f;
+    text-shadow: 0 0 6px rgba(77, 255, 143, 0.35);
+  }
+
+  h1 {
+    font-size: 28px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin: 0 0 16px;
+    max-width: 800px;
+    color: #eaeaea;
+    text-shadow: 0 0 10px rgba(77, 250, 255, 0.25);
+  }
+
+  .entry-dateline {
+    margin: -8px 0 16px;
+    font-size: 13px;
+    color: #777;
+  }
+
+  .entry p {
+    max-width: 800px;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0 0 16px;
+    color: #ccc;
+  }
+
+  .glossary-section {
+    margin-top: 32px;
+  }
+
+  .glossary-section h2 {
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    color: #4dfaff;
+    border-bottom: 1px solid rgba(77, 250, 255, 0.25);
+  }
+
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .glossary-term {
+    padding: 14px 16px;
+    border: 1px dashed rgba(77, 250, 255, 0.3);
+    border-radius: 4px;
+  }
+
+  .term-name {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #eaeaea;
+  }
+
+  .term-tagline {
+    margin: 2px 0 8px;
+    font-size: 12px;
+    font-style: italic;
+    color: #4dff8f;
+    opacity: 0.8;
+  }
+
+  .term-definition {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #bbb;
+  }
+
+  .glossary-note {
+    margin: 24px 0 0;
+    font-size: 13px;
+    font-style: italic;
+    color: #777;
+  }
+</style>
