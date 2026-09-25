@@ -1,0 +1,36 @@
+---
+// Bare, fully-responsive shell for standalone "node" puzzle pages
+// (node-001, node-002, ...) — unlike MainLayout's fixed 1920x1080
+// office stage, these scale naturally to any viewport.
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} · The Kali Hypothesis</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: #060608;
+    color: #d8d8d8;
+    font-family: 'Courier New', Courier, monospace;
+  }
+</style>
