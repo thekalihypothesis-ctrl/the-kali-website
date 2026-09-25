@@ -1,0 +1,96 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+
+// Each entry is one article. Newest first. Add more objects here as
+// the case develops — this page just maps over the list, no per-entry
+// wiring needed.
+const articles = [
+  {
+    tag: 'Research Notes',
+    title: 'Behaviour Coding',
+    body: [
+      'Behaviour Coding is the layer underneath every clue in this case — the idea that patterns of action, not just words, carry meaning. A hesitation before a choice, a route retraced twice, a message left unsent: the Detectives treat these as data, not noise.',
+      'Kali doesn’t speak in sentences. She speaks in sequences — a paw print here, a knocked-over object there — and Behaviour Coding is how those sequences get translated into leads worth following.',
+      'This isn’t just narrative flavour. It’s the actual research thread running underneath The Kali Hypothesis: how real choices, timing, and habits encode information, and whether that information can be read back.',
+    ],
+  },
+];
+---
+<MainLayout title="News & Articles">
+  <div class="case-file">
+    <a class="back-link" href="/">&larr; Back to the office</a>
+    <h1>News &amp; Articles</h1>
+
+    {articles.map((article) => (
+      <article class="entry">
+        <p class="entry-tag">{article.tag}</p>
+        <h2>{article.title}</h2>
+        {article.body.map((paragraph) => <p>{paragraph}</p>)}
+      </article>
+    ))}
+  </div>
+</MainLayout>
+
+<style>
+  .case-file {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 80px 120px;
+    background: #0a0a0a;
+    color: #f5f5f0;
+    overflow-y: auto;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 40px;
+    color: #f5f5f0;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+
+  .back-link:hover {
+    opacity: 0.7;
+  }
+
+  h1 {
+    font-size: 48px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 40px;
+  }
+
+  .entry {
+    max-width: 800px;
+    padding-top: 32px;
+    margin-bottom: 32px;
+    border-top: 1px solid rgba(245, 245, 240, 0.3);
+  }
+
+  .entry:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .entry-tag {
+    margin: 0 0 8px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.7;
+  }
+
+  .entry h2 {
+    font-size: 28px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin: 0 0 16px;
+  }
+
+  .entry p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0 0 16px;
+  }
+</style>
