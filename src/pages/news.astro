@@ -1,20 +1,9 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import { articles } from '../data/articles.js';
 
-// Each entry is one article. Newest first. Add more objects here as
-// the case develops — this page just maps over the list, no per-entry
-// wiring needed.
-const articles = [
-  {
-    tag: 'Research Notes',
-    title: 'Behaviour Coding',
-    body: [
-      'Behaviour Coding is the layer underneath every clue in this case — the idea that patterns of action, not just words, carry meaning. A hesitation before a choice, a route retraced twice, a message left unsent: the Detectives treat these as data, not noise.',
-      'Kali doesn’t speak in sentences. She speaks in sequences — a paw print here, a knocked-over object there — and Behaviour Coding is how those sequences get translated into leads worth following.',
-      'This isn’t just narrative flavour. It’s the actual research thread running underneath The Kali Hypothesis: how real choices, timing, and habits encode information, and whether that information can be read back.',
-    ],
-  },
-];
+// See src/data/articles.js for the two supported article shapes
+// (plain body paragraphs, or a glossary with sections/terms).
 ---
 <MainLayout title="News & Articles">
   <div class="case-file">
@@ -25,7 +14,26 @@ const articles = [
       <article class="entry">
         <p class="entry-tag">{article.tag}</p>
         <h2>{article.title}</h2>
-        {article.body.map((paragraph) => <p>{paragraph}</p>)}
+        {article.dateline && <p class="entry-dateline">{article.dateline}</p>}
+
+        {article.intro?.map((paragraph) => <p>{paragraph}</p>)}
+        {article.body?.map((paragraph) => <p>{paragraph}</p>)}
+
+        {article.sections?.map((section) => (
+          <div class="glossary-section">
+            <h3>{section.heading}</h3>
+            <div class="glossary-grid">
+              {section.terms.map((entry) => (
+                <div class="glossary-term">
+                  <p class="term-name">{entry.term}</p>
+                  <p class="term-tagline">{entry.tagline}</p>
+                  <p class="term-definition">{entry.definition}</p>
+                </div>
+              ))}
+            </div>
+            {section.note && <p class="glossary-note">{section.note}</p>}
+          </div>
+        ))}
       </article>
     ))}
   </div>
@@ -62,7 +70,7 @@ const articles = [
   }
 
   .entry {
-    max-width: 800px;
+    max-width: 1200px;
     padding-top: 32px;
     margin-bottom: 32px;
     border-top: 1px solid rgba(245, 245, 240, 0.3);
@@ -86,11 +94,72 @@ const articles = [
     text-transform: uppercase;
     letter-spacing: 0.02em;
     margin: 0 0 16px;
+    max-width: 800px;
+  }
+
+  .entry-dateline {
+    margin: -8px 0 16px;
+    font-size: 14px;
+    opacity: 0.6;
   }
 
   .entry p {
+    max-width: 800px;
     font-size: 18px;
     line-height: 1.6;
     margin: 0 0 16px;
+  }
+
+  .glossary-section {
+    margin-top: 32px;
+  }
+
+  .glossary-section h3 {
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(245, 245, 240, 0.3);
+  }
+
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px 40px;
+  }
+
+  .glossary-term {
+    max-width: none;
+  }
+
+  .term-name {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    max-width: none;
+  }
+
+  .term-tagline {
+    margin: 2px 0 6px;
+    font-size: 13px;
+    font-style: italic;
+    opacity: 0.6;
+    max-width: none;
+  }
+
+  .term-definition {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: none;
+  }
+
+  .glossary-note {
+    margin: 24px 0 0;
+    font-size: 14px;
+    font-style: italic;
+    opacity: 0.7;
+    max-width: none;
   }
 </style>
