@@ -52,13 +52,14 @@ const debug = Astro.url.searchParams.get('debug') === '1';
 
   <!--
     The bottom desk-drawer label is baked into scene-complete.jpg as
-    "KALI" and can't be edited in place, so this patch sits over it
-    with the new "D4" text. It's purely visual (pointer-events: none)
-    — clicking still goes through to the desk-drawer-d4 ClickableRegion
-    underneath, unaffected. Coordinates measured directly against the
-    source image (cropped + zoomed), not eyeballed.
+    "KALI" and can't be edited in place, so this real drawer-label
+    asset (matching the D1/D2/D3 art style, supplied) sits over it —
+    covers both the pull handle and the tag. Purely visual
+    (pointer-events: none); clicking still goes through to the
+    desk-drawer-d4 ClickableRegion underneath, unaffected. Coordinates
+    measured directly against the source image (cropped + zoomed).
   -->
-  <span class="drawer-patch" aria-hidden="true">D4</span>
+  <img class="drawer-patch" src="/images/office/drawer-d4-label.png" alt="" aria-hidden="true" />
 
   <!--
     New Kali hotspot: the ghost-cat drawing replaces the drawer as the
@@ -123,21 +124,11 @@ const debug = Astro.url.searchParams.get('debug') === '1';
 
   .drawer-patch {
     position: absolute;
-    left: 1180px;
-    top: 995px;
-    width: 82px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f5f5f0;
-    color: #0a0a0a;
-    font-family: 'Komika Hand', 'Courier New', Courier, monospace;
-    font-weight: 700;
-    font-size: 16px;
-    letter-spacing: 0.02em;
-    border: 2px solid #0a0a0a;
-    border-radius: 6px;
+    left: 1178px;
+    top: 972px;
+    width: 84px;
+    height: 52px;
+    display: block;
     pointer-events: none;
   }
 
