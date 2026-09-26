@@ -1,5 +1,6 @@
 ---
 import NodeLayout from '../../layouts/NodeLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { articles } from '../../data/articles.js';
 
 export function getStaticPaths() {
@@ -10,10 +11,14 @@ export function getStaticPaths() {
 }
 
 const { article } = Astro.props;
+const crumbs = [
+  { label: 'Memo', href: '/news' },
+  { label: article.title },
+];
 ---
 <NodeLayout title={article.title}>
   <div class="feed">
-    <a class="back-link" href="/news">&larr; Back to News & Articles</a>
+    <Breadcrumbs crumbs={crumbs} />
 
     <article class="entry">
       <p class="entry-tag">{article.tag}</p>
@@ -23,21 +28,17 @@ const { article } = Astro.props;
       {article.intro?.map((paragraph) => <p>{paragraph}</p>)}
       {article.body?.map((paragraph) => <p>{paragraph}</p>)}
 
-      {article.sections?.map((section) => (
-        <div class="glossary-section">
-          <h2>{section.heading}</h2>
-          <div class="glossary-grid">
-            {section.terms.map((entry) => (
-              <div class="glossary-term">
-                <p class="term-name">{entry.term}</p>
-                <p class="term-tagline">{entry.tagline}</p>
-                <p class="term-definition">{entry.definition}</p>
-              </div>
-            ))}
-          </div>
-          {section.note && <p class="glossary-note">{section.note}</p>}
+      {article.sections && (
+        <div class="part-grid">
+          {article.sections.map((section) => (
+            <a class="part-card" href={`/news/${article.slug}/${section.slug}`}>
+              <h2>{section.heading}</h2>
+              <p class="part-count">{section.terms.length} terms</p>
+              <p class="part-open">Open sheet &rarr;</p>
+            </a>
+          ))}
         </div>
-      ))}
+      )}
     </article>
   </div>
 </NodeLayout>
@@ -47,20 +48,6 @@ const { article } = Astro.props;
     max-width: 1200px;
     margin: 0 auto;
     padding: 60px 24px 100px;
-  }
-
-  .back-link {
-    display: inline-block;
-    margin-bottom: 40px;
-    color: #4dfaff;
-    text-decoration: none;
-    font-size: 14px;
-    letter-spacing: 0.02em;
-    border-bottom: 1px solid rgba(77, 250, 255, 0.4);
-  }
-
-  .back-link:hover {
-    opacity: 0.7;
   }
 
   .entry-tag {
@@ -96,58 +83,46 @@ const { article } = Astro.props;
     color: #ccc;
   }
 
-  .glossary-section {
-    margin-top: 32px;
-  }
-
-  .glossary-section h2 {
-    font-size: 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin: 0 0 16px;
-    padding-bottom: 8px;
-    color: #4dfaff;
-    border-bottom: 1px solid rgba(77, 250, 255, 0.25);
-  }
-
-  .glossary-grid {
+  .part-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 24px;
   }
 
-  .glossary-term {
-    padding: 14px 16px;
+  .part-card {
+    display: block;
+    padding: 20px;
+    background: rgba(77, 250, 255, 0.03);
     border: 1px dashed rgba(77, 250, 255, 0.3);
     border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
   }
 
-  .term-name {
-    margin: 0;
+  .part-card:hover {
+    background: rgba(77, 250, 255, 0.08);
+    border-color: rgba(77, 250, 255, 0.7);
+  }
+
+  .part-card h2 {
+    margin: 0 0 8px;
     font-size: 15px;
-    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
     color: #eaeaea;
+    text-shadow: none;
   }
 
-  .term-tagline {
-    margin: 2px 0 8px;
+  .part-count {
+    margin: 0 0 12px;
     font-size: 12px;
-    font-style: italic;
-    color: #4dff8f;
-    opacity: 0.8;
+    color: #666;
   }
 
-  .term-definition {
+  .part-open {
     margin: 0;
-    font-size: 14px;
-    line-height: 1.5;
-    color: #bbb;
-  }
-
-  .glossary-note {
-    margin: 24px 0 0;
     font-size: 13px;
-    font-style: italic;
-    color: #777;
+    color: #4dfaff;
   }
 </style>

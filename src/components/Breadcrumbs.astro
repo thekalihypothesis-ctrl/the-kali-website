@@ -1,0 +1,47 @@
+---
+// crumbs: [{ label, href }, ...]. The last crumb is treated as the
+// current page (rendered plain, no link) regardless of whether it has
+// an href.
+interface Props {
+  crumbs: { label: string; href?: string }[];
+}
+const { crumbs } = Astro.props;
+---
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  {crumbs.map((crumb, i) => (
+    <>
+      {i > 0 && <span class="sep">/</span>}
+      {i < crumbs.length - 1 && crumb.href ? (
+        <a href={crumb.href}>{crumb.label}</a>
+      ) : (
+        <span class="current">{crumb.label}</span>
+      )}
+    </>
+  ))}
+</nav>
+
+<style>
+  .breadcrumbs {
+    margin-bottom: 32px;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+
+  .breadcrumbs a {
+    color: #4dfaff;
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    opacity: 0.7;
+  }
+
+  .breadcrumbs .sep {
+    margin: 0 8px;
+    color: #444;
+  }
+
+  .breadcrumbs .current {
+    color: #888;
+  }
+</style>

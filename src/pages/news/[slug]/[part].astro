@@ -1,0 +1,142 @@
+---
+import NodeLayout from '../../../layouts/NodeLayout.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import { articles } from '../../../data/articles.js';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (const article of articles) {
+    if (!article.sections) continue;
+    article.sections.forEach((section, index) => {
+      paths.push({
+        params: { slug: article.slug, part: section.slug },
+        props: {
+          article,
+          section,
+          prev: article.sections[index - 1] ?? null,
+          next: article.sections[index + 1] ?? null,
+        },
+      });
+    });
+  }
+  return paths;
+}
+
+const { article, section, prev, next } = Astro.props;
+const crumbs = [
+  { label: 'Memo', href: '/news' },
+  { label: article.title, href: `/news/${article.slug}` },
+  { label: section.heading },
+];
+---
+<NodeLayout title={`${section.heading} · ${article.title}`}>
+  <div class="feed">
+    <Breadcrumbs crumbs={crumbs} />
+
+    <h1>{section.heading}</h1>
+
+    <div class="glossary-grid">
+      {section.terms.map((entry) => (
+        <div class="glossary-term">
+          <p class="term-name">{entry.term}</p>
+          <p class="term-tagline">{entry.tagline}</p>
+          <p class="term-definition">{entry.definition}</p>
+        </div>
+      ))}
+    </div>
+
+    {section.note && <p class="glossary-note">{section.note}</p>}
+
+    <div class="part-nav">
+      {prev ? (
+        <a class="nav-link nav-prev" href={`/news/${article.slug}/${prev.slug}`}>&larr; {prev.heading}</a>
+      ) : <span />}
+      {next ? (
+        <a class="nav-link nav-next" href={`/news/${article.slug}/${next.slug}`}>{next.heading} &rarr;</a>
+      ) : <span />}
+    </div>
+  </div>
+</NodeLayout>
+
+<style>
+  .feed {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+  }
+
+  h1 {
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin: 0 0 32px;
+    color: #4dfaff;
+    text-shadow: 0 0 10px rgba(77, 250, 255, 0.3);
+  }
+
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .glossary-term {
+    padding: 14px 16px;
+    border: 1px dashed rgba(77, 250, 255, 0.3);
+    border-radius: 4px;
+  }
+
+  .term-name {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #eaeaea;
+  }
+
+  .term-tagline {
+    margin: 2px 0 8px;
+    font-size: 12px;
+    font-style: italic;
+    color: #4dff8f;
+    opacity: 0.8;
+  }
+
+  .term-definition {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #bbb;
+  }
+
+  .glossary-note {
+    margin: 24px 0 0;
+    font-size: 13px;
+    font-style: italic;
+    color: #777;
+  }
+
+  .part-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px dashed rgba(77, 250, 255, 0.25);
+  }
+
+  .nav-link {
+    max-width: 45%;
+    font-size: 14px;
+    color: #4dfaff;
+    text-decoration: none;
+  }
+
+  .nav-link:hover {
+    opacity: 0.7;
+  }
+
+  .nav-next {
+    text-align: right;
+    margin-left: auto;
+  }
+</style>

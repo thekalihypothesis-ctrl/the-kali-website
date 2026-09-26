@@ -1,16 +1,19 @@
-// News & Articles entries, newest first. Each is its own page at
-// /news/<slug> — see src/pages/news/[slug].astro. news.astro is just
-// the index of clickable case-file cards (uses `teaser`, not the full
-// body/sections).
+// Memo entries, newest first. Each is its own page at /news/<slug> —
+// see src/pages/news/[slug].astro. news.astro is just the index of
+// clickable case-file cards (uses `teaser`, not the full body/sections).
 //
 // Two shapes are supported:
 //  - { slug, tag, title, teaser, body: string[] }
-//    A plain article: one paragraph per string.
+//    A plain article: one paragraph per string. Renders as a single
+//    page.
 //  - { slug, tag, title, teaser, dateline, intro: string[], sections: [...] }
 //    A glossary/reference-style entry, reproducing a source document's
 //    own structure (sheets of term/tagline/definition) instead of
-//    rewriting it into prose. Each section is
-//    { heading, note?, terms: [{ term, tagline, definition }] }.
+//    rewriting it into prose. Each section is its own clickable "part"
+//    page at /news/<slug>/<section.slug> (see
+//    src/pages/news/[slug]/[part].astro) — the /news/<slug> page is an
+//    index of those parts, not the full content. Each section is
+//    { slug, heading, note?, terms: [{ term, tagline, definition }] }.
 
 export const articles = [
   {
@@ -18,13 +21,14 @@ export const articles = [
     tag: 'Case-Board Glossary',
     title: 'Behaviour Code Theory: Working Glossary',
     teaser: 'A four-sheet glossary of internal terminology — BCT, BCC, XDU, Quadons — recovered and reproduced sheet by sheet.',
-    dateline: '22 September 2026',
+    dateline: '14 August 1989',
     intro: [
       'A four-sheet glossary surfaced among the case materials — internal terminology for something called Behaviour Code Theory (BCT). It reads like documentation for a system still being built, not a finished one: several entries end in "remains to be defined."',
       'Reproduced here exactly as found, sheet by sheet.',
     ],
     sections: [
       {
+        slug: 'sheet-01',
         heading: 'Sheet 01 — Architecture & operations',
         note: 'Flowchart reference: I > IS > P > OS > O, with F returning to relevant stages.',
         terms: [
@@ -43,6 +47,7 @@ export const articles = [
         ],
       },
       {
+        slug: 'sheet-02',
         heading: 'Sheet 02 — Code & relationships',
         note: 'Reading rule: code identity, its current application and its annotations are distinct.',
         terms: [
@@ -61,6 +66,7 @@ export const articles = [
         ],
       },
       {
+        slug: 'sheet-03',
         heading: 'Sheet 03 — Requirements & evaluation',
         note: 'Decision rule: acceptance permits operation; it does not declare certainty.',
         terms: [
@@ -79,11 +85,12 @@ export const articles = [
         ],
       },
       {
+        slug: 'sheet-04',
         heading: 'Sheet 04 — Feedback & memory assets',
-        note: 'Placement under discussion: S-I Plugin within FPA, between IS feedback and OS feedback.',
+        note: 'Archive architecture: S-I within XDU; compares FPA reports with independent records.',
         terms: [
-          { term: 'FPA', tagline: 'Feedback Process Analysis', definition: 'Established expansion supplied by D1. Current focus: analysing feedback and its relationships. Earlier full specification needs to be carried forward.' },
-          { term: 'S-I Plugin', tagline: 'Sentient-Integration Plugin', definition: 'Established expansion supplied by D1. Proposed placement is within FPA. Exact interfaces and functions remain open; the name is not proof of sentience.' },
+          { term: 'FPA', tagline: 'Feedback Processing Analyser', definition: 'Analyses process and outcome feedback for XDU. In the archived costing model, applies schedules and calculates estimates, settlements and repair options.' },
+          { term: 'S-I Plugin', tagline: 'Sentinel-Integrity Plugin', definition: 'Safeguard within XDU. Compares FPA reports with independent memory and Sort states. Flags discrepancies or interrupts commitment; the Decider retains selection.' },
           { term: 'IS / OS feedback', tagline: 'Two reference points', definition: 'Feedback associated with Input Sort and Output Sort. Compare relevant expectations and effects across the proper operation and time interval.' },
           { term: 'Working feedback', tagline: 'Immediate use', definition: 'Feedback available to adjust ongoing evaluation or operation. The same information may also be retained for future reference.' },
           { term: 'Stored feedback asset', tagline: 'Retained experience', definition: 'Feedback preserved with context: source, R&C, timing, outcome, uncertainty and significant filtering decisions.' },
