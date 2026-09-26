@@ -1,0 +1,19 @@
+/* Komika Hand — the site's one consistent font, matching the lettering
+   baked into the office scene artwork. Both weights map to the same
+   family so existing font-weight: 700/900 rules pick up the real bold
+   face instead of a synthetic fake-bold. */
+@font-face {
+  font-family: 'Komika Hand';
+  src: url('/fonts/KomikaHand-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Komika Hand';
+  src: url('/fonts/KomikaHand-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
