@@ -166,9 +166,9 @@ export const hotspots = [
     h: 80,
   },
   {
-    id: 'desk-drawer-kali',
-    label: 'Desk drawer KALI',
-    href: '/kali',
+    id: 'desk-drawer-d4',
+    label: 'Desk drawer D4',
+    href: '/d4',
     x: 1150,
     y: 935,
     w: 150,
