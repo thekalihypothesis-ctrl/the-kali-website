@@ -51,10 +51,10 @@ export const articles = [
         heading: 'Sheet 02 — Code & relationships',
         note: 'Reading rule: code identity, its current application and its annotations are distinct.',
         terms: [
-          { term: 'Quadon', tagline: 'Four-glyph code', definition: 'A tetraglyph using 0, 1, + and minus. Four choices at each of four positions yield 256 possible Quadons.' },
+          { term: 'Quadon', tagline: 'Four-glyph code', definition: 'A tetraglyph using 0, 1, + and −. Four choices at each of four positions yield 256 possible Quadons.' },
           { term: 'Glyph', tagline: 'Alphabet element', definition: 'One symbol within a Quadon. Functional meanings are defined by the model; a drawn curve alone does not establish function.' },
           { term: 'Pairing relationships', tagline: 'Overlapping adjacent pairs', definition: 'G1-G2, G2-G3 and G3-G4. The central pair links the interior positions. Four is the chosen architecture, not proven universal minimality.' },
-          { term: 'Co-binary', tagline: 'Working framework', definition: 'Interaction between the 0/1 and plus/minus pairs. Intended to examine combinations and relationships beyond a single binary classification.' },
+          { term: 'Co-binary', tagline: 'Working framework', definition: 'Interaction between the 0/1 and +/− pairs. Intended to examine combinations and relationships beyond a single binary classification.' },
           { term: 'Code fragment', tagline: 'Selected portion', definition: 'A portion of code considered for an application. Analysis can subdivide it into shorter fragments, Quadons or glyph relationships.' },
           { term: 'Sub-code', tagline: 'Contextual qualification', definition: 'Records such as: avoid x for y under conditions C. This leaves x available for z, subject to verification. Syntax remains open.' },
           { term: 'Ghost code / ghosting', tagline: 'Provisional possibilities', definition: 'A probabilistic developing structure, with requirement-generated blanks and possible insertions. It is not a predetermined correct completion.' },
