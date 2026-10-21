@@ -44,7 +44,10 @@
   const titleEl = overlay?.querySelector('[data-note-title]');
   const bodyEl = overlay?.querySelector('[data-note-body]');
 
-  function openNote(title, paragraphs) {
+  // The office scene opens the matching cabinet drawer while its note is up.
+  const scene = document.querySelector('.office-scene');
+
+  function openNote(title, paragraphs, drawerId) {
     if (!overlay || !titleEl || !bodyEl) return;
     titleEl.textContent = title;
     bodyEl.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
@@ -52,6 +55,7 @@
     titleEl.style.fontSize = `${Math.min(100, Math.floor(430 / (title.length * 0.62)))}px`;
     overlay.classList.add('is-open');
     overlay.setAttribute('aria-hidden', 'false');
+    if (scene && drawerId) scene.dataset.openDrawer = drawerId;
     // Shrink the body text from the design size until it fits the paper
     // (longer notes like Story would otherwise scroll).
     let size = 23;
@@ -66,6 +70,7 @@
     if (!overlay) return;
     overlay.classList.remove('is-open');
     overlay.setAttribute('aria-hidden', 'true');
+    if (scene) delete scene.dataset.openDrawer;
   }
 
   // Any hotspot rendered with a `note` prop gets this class instead of
@@ -78,7 +83,7 @@
     e.preventDefault();
     const title = trigger.getAttribute('data-note-title') || '';
     const body = JSON.parse(trigger.getAttribute('data-note-body') || '[]');
-    openNote(title, body);
+    openNote(title, body, trigger.getAttribute('data-hotspot-id'));
   });
 
   overlay?.querySelector('[data-note-backdrop]')?.addEventListener('click', closeNote);

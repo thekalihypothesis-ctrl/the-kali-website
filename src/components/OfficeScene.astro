@@ -7,6 +7,10 @@ import { hotspots } from '../data/hotspots.js';
 // hotspot — handy while you're tuning coordinates against your
 // real cropped assets.
 const debug = Astro.url.searchParams.get('debug') === '1';
+
+// Filing-cabinet drawers: same open/close pictures as the case-file
+// pages' cabinet nav (CabinetNav.astro).
+const drawerIds = ['about', 'story', 'shows', 'collectibles'];
 ---
 <div class="office-scene">
   <!--
@@ -26,8 +30,29 @@ const debug = Astro.url.searchParams.get('debug') === '1';
     alt="The Kali Hypothesis — detective office"
   />
 
+  <!--
+    Open-drawer pictures for the filing cabinet, laid over the baked-in
+    closed one. nav-<id>.png is the same cabinet art at native size —
+    aligned to the scene by image matching (offset 123,312), then
+    clipped below the cabinet top so the cat mask sitting on it stays.
+    A drawer opens while you hover it, and stays open while its note is
+    showing (DetectiveNote sets data-open-drawer on .office-scene).
+  -->
+  {drawerIds.map((id) => (
+    <img
+      class={`drawer-frame drawer-frame--${id}`}
+      src={`/images/Navbars/nav-${id}.png`}
+      alt=""
+      aria-hidden="true"
+      width="340"
+      height="736"
+    />
+  ))}
+
   {hotspots.map((spot) => (
     <ClickableRegion
+      id={spot.id}
+      drawer={drawerIds.includes(spot.id)}
       href={spot.href}
       label={spot.label}
       x={spot.x}
@@ -94,6 +119,32 @@ const debug = Astro.url.searchParams.get('debug') === '1';
     left: 0;
     width: 100%;
     height: 100%;
+  }
+
+  .drawer-frame {
+    position: absolute;
+    left: 123px;
+    top: 312px;
+    width: 340px;
+    height: 736px;
+    display: block;
+    clip-path: inset(44px 0 0 0);
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    transition: opacity 0.12s ease;
+  }
+
+  .office-scene[data-open-drawer='about'] .drawer-frame--about,
+  .office-scene:has(.hotspot[data-hotspot-id='about']:hover) .drawer-frame--about,
+  .office-scene[data-open-drawer='story'] .drawer-frame--story,
+  .office-scene:has(.hotspot[data-hotspot-id='story']:hover) .drawer-frame--story,
+  .office-scene[data-open-drawer='shows'] .drawer-frame--shows,
+  .office-scene:has(.hotspot[data-hotspot-id='shows']:hover) .drawer-frame--shows,
+  .office-scene[data-open-drawer='collectibles'] .drawer-frame--collectibles,
+  .office-scene:has(.hotspot[data-hotspot-id='collectibles']:hover) .drawer-frame--collectibles {
+    opacity: 1;
   }
 
   .news-tab {

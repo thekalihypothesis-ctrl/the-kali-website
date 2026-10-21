@@ -1,5 +1,7 @@
 ---
 interface Props {
+  id?: string;
+  drawer?: boolean;
   href: string;
   label: string;
   x: number;
@@ -9,10 +11,11 @@ interface Props {
   debug?: boolean;
   note?: { title: string; body: string[] };
 }
-const { href, label, x, y, w, h, debug, note } = Astro.props;
+const { id, drawer, href, label, x, y, w, h, debug, note } = Astro.props;
 ---
 <a
-  class={`hotspot${note ? ' hotspot--note' : ''}`}
+  class={`hotspot${note ? ' hotspot--note' : ''}${drawer ? ' hotspot--drawer' : ''}`}
+  data-hotspot-id={id}
   href={href}
   aria-label={label}
   style={`left:${x}px; top:${y}px; width:${w}px; height:${h}px;`}
@@ -36,6 +39,13 @@ const { href, label, x, y, w, h, debug, note } = Astro.props;
     background-color: rgba(255, 255, 255, 0.08);
     box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
     cursor: pointer;
+  }
+
+  /* Filing-cabinet drawers show their own opening drawer instead of
+     the highlight box (see OfficeScene.astro). */
+  .hotspot--drawer:hover {
+    background-color: transparent;
+    box-shadow: none;
   }
 
   /* Turn on with ?debug=1 — see OfficeScene.astro */
