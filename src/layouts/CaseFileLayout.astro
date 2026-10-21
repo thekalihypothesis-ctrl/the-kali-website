@@ -1,0 +1,75 @@
+---
+import MainLayout from './MainLayout.astro';
+import CabinetNav from '../components/CabinetNav.astro';
+import { hotspots } from '../data/hotspots.js';
+
+// Shared shell for the About / Story / Shows / Collectibles pages.
+// Content comes from the same hotspots.js entry as the office popup,
+// so direct links and the popup never drift apart.
+interface Props {
+  id: 'about' | 'story' | 'shows' | 'collectibles';
+}
+const { id } = Astro.props;
+const { note } = hotspots.find((spot) => spot.id === id);
+---
+<MainLayout title={note.title}>
+  <div class="case-file">
+    <aside class="cabinet-col">
+      <CabinetNav current={id} />
+    </aside>
+
+    <main class="case-file-body">
+      <a class="back-link" href="/">&larr; Back to the office</a>
+      <h1>{note.title}</h1>
+      {note.body.map((paragraph) => <p>{paragraph}</p>)}
+    </main>
+  </div>
+</MainLayout>
+
+<style>
+  .case-file {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 90px;
+    padding: 0 117px;
+    background: #0a0a0a;
+    color: #f5f5f0;
+  }
+
+  .cabinet-col {
+    flex: none;
+  }
+
+  .case-file-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 40px;
+    color: #f5f5f0;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+
+  .back-link:hover {
+    opacity: 0.7;
+  }
+
+  h1 {
+    font-size: 43px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 24px;
+  }
+
+  p {
+    max-width: 800px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+</style>

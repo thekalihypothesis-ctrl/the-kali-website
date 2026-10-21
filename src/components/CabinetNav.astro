@@ -1,0 +1,106 @@
+---
+// Filing-cabinet navigation for the case-file pages. There is one
+// cabinet picture per state (nav-homepage = all drawers shut, the
+// others = that drawer pulled out); the page you're on shows its own
+// drawer open, and hovering/focusing another drawer swaps that
+// drawer's picture in so it looks like it opens.
+//
+// The drawer labels are baked into the pictures, so each drawer is a
+// transparent link laid over it. Zone positions are percentages of
+// the 340x736 art, measured from the closed frame.
+interface Props {
+  current?: 'about' | 'story' | 'shows' | 'collectibles';
+}
+const { current } = Astro.props;
+
+const drawers = [
+  { id: 'about', label: 'About', href: '/about', top: 7.5 },
+  { id: 'story', label: 'Story', href: '/story', top: 29 },
+  { id: 'shows', label: 'Shows', href: '/shows', top: 50.5 },
+  { id: 'collectibles', label: 'Collectibles', href: '/collectibles', top: 72 },
+];
+const frames = ['homepage', ...drawers.map((d) => d.id)];
+const shown = current ?? 'homepage';
+---
+<nav class="cabinet" aria-label="Case file drawers">
+  {frames.map((id) => (
+    <img
+      class={`frame frame--${id} ${id === shown ? 'is-current' : ''}`}
+      src={`/images/Navbars/nav-${id}.png`}
+      alt=""
+      aria-hidden="true"
+      width="340"
+      height="736"
+    />
+  ))}
+
+  {drawers.map((d) => (
+    <a
+      class={`zone zone--${d.id}`}
+      href={d.href}
+      style={`top:${d.top}%`}
+      aria-current={d.id === current ? 'page' : undefined}
+    >
+      <span class="zone-label">{d.label}</span>
+    </a>
+  ))}
+</nav>
+
+<style>
+  .cabinet {
+    position: relative;
+    width: 306px; /* 340px art at 90% */
+    aspect-ratio: 340 / 736;
+  }
+
+  .frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .frame.is-current {
+    opacity: 1;
+  }
+
+  /* While any drawer is hovered/focused, show only that drawer's frame. */
+  .cabinet:has(.zone:hover) .frame,
+  .cabinet:has(.zone:focus-visible) .frame {
+    opacity: 0;
+  }
+
+  .cabinet:has(.zone--about:hover) .frame--about,
+  .cabinet:has(.zone--about:focus-visible) .frame--about,
+  .cabinet:has(.zone--story:hover) .frame--story,
+  .cabinet:has(.zone--story:focus-visible) .frame--story,
+  .cabinet:has(.zone--shows:hover) .frame--shows,
+  .cabinet:has(.zone--shows:focus-visible) .frame--shows,
+  .cabinet:has(.zone--collectibles:hover) .frame--collectibles,
+  .cabinet:has(.zone--collectibles:focus-visible) .frame--collectibles {
+    opacity: 1;
+  }
+
+  .zone {
+    position: absolute;
+    left: 0;
+    width: 70%;
+    height: 21%;
+    display: block;
+    outline-offset: -3px;
+  }
+
+  .zone-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>
