@@ -133,17 +133,20 @@ const drawerIds = ['about', 'story', 'shows', 'collectibles'];
     pointer-events: none;
     user-select: none;
     -webkit-user-drag: none;
-    transition: opacity 0.12s ease;
   }
 
   .office-scene[data-open-drawer='about'] .drawer-frame--about,
   .office-scene:has(.hotspot[data-hotspot-id='about']:hover) .drawer-frame--about,
+  .office-scene:has(.hotspot[data-hotspot-id='about']:focus-visible) .drawer-frame--about,
   .office-scene[data-open-drawer='story'] .drawer-frame--story,
   .office-scene:has(.hotspot[data-hotspot-id='story']:hover) .drawer-frame--story,
+  .office-scene:has(.hotspot[data-hotspot-id='story']:focus-visible) .drawer-frame--story,
   .office-scene[data-open-drawer='shows'] .drawer-frame--shows,
   .office-scene:has(.hotspot[data-hotspot-id='shows']:hover) .drawer-frame--shows,
+  .office-scene:has(.hotspot[data-hotspot-id='shows']:focus-visible) .drawer-frame--shows,
   .office-scene[data-open-drawer='collectibles'] .drawer-frame--collectibles,
-  .office-scene:has(.hotspot[data-hotspot-id='collectibles']:hover) .drawer-frame--collectibles {
+  .office-scene:has(.hotspot[data-hotspot-id='collectibles']:hover) .drawer-frame--collectibles,
+  .office-scene:has(.hotspot[data-hotspot-id='collectibles']:focus-visible) .drawer-frame--collectibles {
     opacity: 1;
   }
 

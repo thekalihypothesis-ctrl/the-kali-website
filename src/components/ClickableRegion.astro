@@ -18,7 +18,7 @@ const { id, drawer, href, label, x, y, w, h, debug, note } = Astro.props;
   data-hotspot-id={id}
   href={href}
   aria-label={label}
-  style={`left:${x}px; top:${y}px; width:${w}px; height:${h}px;`}
+  style={`--x:${x}px; --y:${y}px; --w:${w}px; --h:${h}px;`}
   data-debug={debug ? 'true' : 'false'}
   data-note-title={note?.title}
   data-note-body={note ? JSON.stringify(note.body) : undefined}
@@ -28,6 +28,10 @@ const { id, drawer, href, label, x, y, w, h, debug, note } = Astro.props;
 <style>
   .hotspot {
     position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    height: var(--h);
     display: block;
     outline: none;
     -webkit-tap-highlight-color: transparent;
@@ -46,6 +50,18 @@ const { id, drawer, href, label, x, y, w, h, debug, note } = Astro.props;
   .hotspot--drawer:hover {
     background-color: transparent;
     box-shadow: none;
+  }
+
+  /* The open drawer slides ~22px left of and ~25px below the closed
+     face. While one is hovered its box grows to cover that, and sits
+     above its neighbours, so the pointer on the open drawer keeps it
+     open instead of handing over to the drawer underneath. Growing only
+     outward means the box never shrinks out from under the pointer. */
+  .hotspot--drawer:hover {
+    z-index: 2;
+    left: calc(var(--x) - 22px);
+    width: calc(var(--w) + 22px);
+    height: calc(var(--h) + 25px);
   }
 
   /* Turn on with ?debug=1 — see OfficeScene.astro */
