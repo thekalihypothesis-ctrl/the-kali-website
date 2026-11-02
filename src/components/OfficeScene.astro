@@ -11,6 +11,18 @@ const debug = Astro.url.searchParams.get('debug') === '1';
 // Filing-cabinet drawers: same open/close pictures as the case-file
 // pages' cabinet nav (CabinetNav.astro).
 const drawerIds = ['about', 'story', 'shows', 'collectibles'];
+
+// Desk drawers: public/images/Desk/<art>-Drawer_Closed.png / _Open.png at
+// (x, y) -- found by image matching against the scene -- laid over the
+// baked-in drawers. The open picture is a few px bigger (the drawer
+// slides toward you). The pictures are 165x78-79 closed; w/h are the open size.
+const deskDrawers = [
+  { id: 'desk-drawer-d1', art: 'D1', x: 1138, y: 732, w: 167, h: 87 },
+  { id: 'desk-drawer-d2', art: 'D2', x: 1138, y: 808, w: 169, h: 88 },
+  { id: 'desk-drawer-d3', art: 'D3', x: 1138, y: 883, w: 168, h: 84 },
+  { id: 'desk-drawer-d4', art: 'D4', x: 1139, y: 959, w: 174, h: 86 },
+];
+const deskIds = deskDrawers.map((d) => d.id);
 ---
 <div class="office-scene">
   <!--
@@ -49,10 +61,22 @@ const drawerIds = ['about', 'story', 'shows', 'collectibles'];
     />
   ))}
 
+  {deskDrawers.map((d) => (
+    <img
+      class={`desk-drawer ${d.id}`}
+      src={`/images/Desk/${d.art}-Drawer_Open.png`}
+      alt=""
+      aria-hidden="true"
+      style={`left:${d.x}px; top:${d.y}px; width:${d.w}px; height:${d.h}px;`}
+    />
+  ))}
+
   {hotspots.map((spot) => (
     <ClickableRegion
       id={spot.id}
-      drawer={drawerIds.includes(spot.id)}
+      drawer={drawerIds.includes(spot.id) || deskIds.includes(spot.id)}
+      growX={deskIds.includes(spot.id) ? 0 : undefined}
+      growY={deskIds.includes(spot.id) ? 8 : undefined}
       href={spot.href}
       label={spot.label}
       x={spot.x}
@@ -75,16 +99,16 @@ const drawerIds = ['about', 'story', 'shows', 'collectibles'];
     MEMO
   </a>
 
-  <!--
-    The bottom desk-drawer label is baked into scene-complete.jpg as
-    "KALI" and can't be edited in place, so this real drawer-label
-    asset (matching the D1/D2/D3 art style, supplied) sits over it —
-    covers both the pull handle and the tag. Purely visual
-    (pointer-events: none); clicking still goes through to the
-    desk-drawer-d4 ClickableRegion underneath, unaffected. Coordinates
-    measured directly against the source image (cropped + zoomed).
-  -->
-  <img class="drawer-patch" src="/images/office/drawer-d4-label.png" alt="" aria-hidden="true" />
+  <!-- Closed desk drawers from the Desk art, covering the baked-in ones. -->
+  {deskDrawers.map((d) => (
+    <img
+      class="desk-drawer-closed"
+      src={`/images/Desk/${d.art}-Drawer_Closed.png`}
+      alt=""
+      aria-hidden="true"
+      style={`left:${d.x}px; top:${d.y}px;`}
+    />
+  ))}
 
   <!--
     New Kali hotspot: the ghost-cat drawing replaces the drawer as the
@@ -150,6 +174,27 @@ const drawerIds = ['about', 'story', 'shows', 'collectibles'];
     opacity: 1;
   }
 
+  .desk-drawer {
+    position: absolute;
+    z-index: 1; /* above the closed drawers, which come later in the page */
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d1']:hover) .desk-drawer-d1,
+  .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d1']:focus-visible) .desk-drawer-d1,
+  .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d2']:hover) .desk-drawer-d2,
+  .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d2']:focus-visible) .desk-drawer-d2,
+  .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d3']:hover) .desk-drawer-d3,
+  .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d3']:focus-visible) .desk-drawer-d3,
+  .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d4']:hover) .desk-drawer-d4,
+  .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d4']:focus-visible) .desk-drawer-d4 {
+    opacity: 1;
+  }
+
   .news-tab {
     position: absolute;
     left: 1770px;
@@ -189,19 +234,11 @@ const drawerIds = ['about', 'story', 'shows', 'collectibles'];
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
   }
 
-  .drawer-patch {
+  .desk-drawer-closed {
     position: absolute;
-    /* The supplied asset (165x78) was already sized to roughly match
-       the drawer's real proportions -- placed near its native size
-       (previously shrunk to 84x52, which is why it looked like a small
-       floating patch instead of reaching the drawer's actual left/right
-       edges at ~1129px/~1305px, measured directly from the artwork). */
-    left: 1135px;
-    top: 948px;
-    width: 165px; /* 176px scaled down 6% -- lands almost exactly on the asset's native 165px width */
-    aspect-ratio: 165 / 78;
     display: block;
     pointer-events: none;
+    user-select: none;
   }
 
   .kali-cat {

@@ -2,6 +2,8 @@
 interface Props {
   id?: string;
   drawer?: boolean;
+  growX?: number;
+  growY?: number;
   href: string;
   label: string;
   x: number;
@@ -11,14 +13,14 @@ interface Props {
   debug?: boolean;
   note?: { title: string; body: string[] };
 }
-const { id, drawer, href, label, x, y, w, h, debug, note } = Astro.props;
+const { id, drawer, growX = 22, growY = 25, href, label, x, y, w, h, debug, note } = Astro.props;
 ---
 <a
   class={`hotspot${note ? ' hotspot--note' : ''}${drawer ? ' hotspot--drawer' : ''}`}
   data-hotspot-id={id}
   href={href}
   aria-label={label}
-  style={`--x:${x}px; --y:${y}px; --w:${w}px; --h:${h}px;`}
+  style={`--x:${x}px; --y:${y}px; --w:${w}px; --h:${h}px; --grow-x:${growX}px; --grow-y:${growY}px;`}
   data-debug={debug ? 'true' : 'false'}
   data-note-title={note?.title}
   data-note-body={note ? JSON.stringify(note.body) : undefined}
@@ -52,16 +54,16 @@ const { id, drawer, href, label, x, y, w, h, debug, note } = Astro.props;
     box-shadow: none;
   }
 
-  /* The open drawer slides ~22px left of and ~25px below the closed
-     face. While one is hovered its box grows to cover that, and sits
+  /* The open drawer slides out past the closed face (--grow-x left,
+     --grow-y below; 22/25px for the cabinet). While one is hovered its box grows to cover that, and sits
      above its neighbours, so the pointer on the open drawer keeps it
      open instead of handing over to the drawer underneath. Growing only
      outward means the box never shrinks out from under the pointer. */
   .hotspot--drawer:hover {
     z-index: 2;
-    left: calc(var(--x) - 22px);
-    width: calc(var(--w) + 22px);
-    height: calc(var(--h) + 25px);
+    left: calc(var(--x) - var(--grow-x));
+    width: calc(var(--w) + var(--grow-x));
+    height: calc(var(--h) + var(--grow-y));
   }
 
   /* Turn on with ?debug=1 — see OfficeScene.astro */
