@@ -1,0 +1,114 @@
+---
+// Popup shown instead of navigating when a hotspot has a `bio` (see
+// hotspots.js) -- the character card slides up over the office, like the
+// hand note (DetectiveNote.astro), while that desk drawer stays open.
+---
+<div class="desk-bio-overlay" data-desk-bio aria-hidden="true">
+  <div class="desk-bio-backdrop" data-bio-backdrop></div>
+
+  <div class="desk-bio-card">
+    <img class="desk-bio-img" data-bio-img src="" alt="" />
+    <button class="desk-bio-close" data-bio-close aria-label="Close card" type="button">&times;</button>
+  </div>
+</div>
+
+<script>
+  const overlay = document.querySelector('[data-desk-bio]');
+  const imgEl = overlay?.querySelector('[data-bio-img]');
+  const scene = document.querySelector('.office-scene');
+
+  function openBio(src, label, drawerId) {
+    if (!overlay || !(imgEl instanceof HTMLImageElement)) return;
+    imgEl.src = src;
+    imgEl.alt = label;
+    overlay.classList.add('is-open');
+    overlay.setAttribute('aria-hidden', 'false');
+    if (scene && drawerId) scene.dataset.openDesk = drawerId;
+  }
+
+  function closeBio() {
+    if (!overlay) return;
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    if (scene) delete scene.dataset.openDesk;
+  }
+
+  document.addEventListener('click', (e) => {
+    const target = e.target;
+    if (!(target instanceof Element)) return;
+    const trigger = target.closest('.hotspot--bio');
+    if (!trigger) return;
+    e.preventDefault();
+    openBio(
+      trigger.getAttribute('data-bio') || '',
+      trigger.getAttribute('aria-label') || '',
+      trigger.getAttribute('data-hotspot-id'),
+    );
+  });
+
+  overlay?.querySelector('[data-bio-backdrop]')?.addEventListener('click', closeBio);
+  overlay?.querySelector('[data-bio-close]')?.addEventListener('click', closeBio);
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeBio();
+  });
+</script>
+
+<style>
+  .desk-bio-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .desk-bio-overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .desk-bio-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  .desk-bio-card {
+    position: absolute;
+    /* Sits left of the desk drawers (x 1138+) so the open drawer stays visible. */
+    left: 490px;
+    top: 100px;
+    height: 880px;
+    aspect-ratio: 512 / 768;
+    transform: translateY(110%) rotate(-2deg);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .desk-bio-overlay.is-open .desk-bio-card {
+    transform: translateY(0) rotate(-2deg);
+  }
+
+  .desk-bio-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .desk-bio-close {
+    position: absolute;
+    top: 22px;
+    right: 22px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(10, 10, 10, 0.85);
+    color: #f5f5f0;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+  }
+</style>

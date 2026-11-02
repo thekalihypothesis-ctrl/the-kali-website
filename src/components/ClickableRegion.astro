@@ -12,11 +12,12 @@ interface Props {
   h: number;
   debug?: boolean;
   note?: { title: string; body: string[] };
+  bio?: string;
 }
-const { id, drawer, growX = 22, growY = 25, href, label, x, y, w, h, debug, note } = Astro.props;
+const { id, drawer, growX = 22, growY = 25, href, label, x, y, w, h, debug, note, bio } = Astro.props;
 ---
 <a
-  class={`hotspot${note ? ' hotspot--note' : ''}${drawer ? ' hotspot--drawer' : ''}`}
+  class={`hotspot${note ? ' hotspot--note' : ''}${bio ? ' hotspot--bio' : ''}${drawer ? ' hotspot--drawer' : ''}`}
   data-hotspot-id={id}
   href={href}
   aria-label={label}
@@ -24,6 +25,7 @@ const { id, drawer, growX = 22, growY = 25, href, label, x, y, w, h, debug, note
   data-debug={debug ? 'true' : 'false'}
   data-note-title={note?.title}
   data-note-body={note ? JSON.stringify(note.body) : undefined}
+  data-bio={bio}
 >
 </a>
 

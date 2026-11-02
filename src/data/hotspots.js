@@ -14,6 +14,8 @@
 // href    — where the click goes
 // x,y     — top-left corner in px
 // w,h     — width/height in px
+// note    — opens the hand-note popup instead of navigating
+// bio     — opens a character card popup (DeskBio.astro) instead of navigating
 
 export const hotspots = [
   {
@@ -142,6 +144,7 @@ export const hotspots = [
     id: 'desk-drawer-d1',
     label: 'Desk drawer D1',
     href: '/d1',
+    bio: '/images/D1-bio.png',
     x: 1138,
     y: 732,
     w: 165,
@@ -151,6 +154,7 @@ export const hotspots = [
     id: 'desk-drawer-d2',
     label: 'Desk drawer D2',
     href: '/d2',
+    bio: '/images/D2-bio.png',
     x: 1138,
     y: 808,
     w: 165,

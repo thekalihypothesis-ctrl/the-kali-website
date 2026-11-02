@@ -1,6 +1,7 @@
 ---
 import ClickableRegion from './ClickableRegion.astro';
 import DetectiveNote from './DetectiveNote.astro';
+import DeskBio from './DeskBio.astro';
 import { hotspots } from '../data/hotspots.js';
 
 // Append ?debug=1 to any URL to see red outlines over every
@@ -85,6 +86,7 @@ const deskIds = deskDrawers.map((d) => d.id);
       h={spot.h}
       debug={debug}
       note={spot.note}
+      bio={spot.bio}
     />
   ))}
 
@@ -134,6 +136,7 @@ const deskIds = deskDrawers.map((d) => d.id);
   <img class="logo-patch" src="/images/office/logo-shrunk.png" alt="" aria-hidden="true" />
 
   <DetectiveNote />
+  <DeskBio />
 </div>
 
 <style>
@@ -184,12 +187,16 @@ const deskIds = deskDrawers.map((d) => d.id);
     -webkit-user-drag: none;
   }
 
+  .office-scene[data-open-desk='desk-drawer-d1'] .desk-drawer-d1,
   .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d1']:hover) .desk-drawer-d1,
   .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d1']:focus-visible) .desk-drawer-d1,
+  .office-scene[data-open-desk='desk-drawer-d2'] .desk-drawer-d2,
   .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d2']:hover) .desk-drawer-d2,
   .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d2']:focus-visible) .desk-drawer-d2,
+  .office-scene[data-open-desk='desk-drawer-d3'] .desk-drawer-d3,
   .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d3']:hover) .desk-drawer-d3,
   .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d3']:focus-visible) .desk-drawer-d3,
+  .office-scene[data-open-desk='desk-drawer-d4'] .desk-drawer-d4,
   .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d4']:hover) .desk-drawer-d4,
   .office-scene:has(.hotspot[data-hotspot-id='desk-drawer-d4']:focus-visible) .desk-drawer-d4 {
     opacity: 1;
