@@ -164,6 +164,7 @@ export const hotspots = [
     id: 'desk-drawer-d3',
     label: 'Desk drawer D3',
     href: '/d3',
+    bio: '/images/D3-bio.png',
     x: 1138,
     y: 883,
     w: 165,

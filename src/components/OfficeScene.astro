@@ -54,7 +54,7 @@ const deskIds = deskDrawers.map((d) => d.id);
   {drawerIds.map((id) => (
     <img
       class={`drawer-frame drawer-frame--${id}`}
-      src={`/images/Navbars/nav-${id}.png`}
+      src={`/images/Navbars/nav-${id === 'shows' ? 'story' : id}.png`}
       alt=""
       aria-hidden="true"
       width="340"
@@ -113,12 +113,19 @@ const deskIds = deskDrawers.map((d) => d.id);
   ))}
 
   <!--
-    New Kali hotspot: the ghost-cat drawing replaces the drawer as the
-    way to reach /kali. First-pass position under the desk, eyeballed
+    New Kali hotspot: the ghost-cat drawing replaces the drawer. Clicking
+    it pops up Kali's character card (DeskBio.astro), and the next click
+    shows Ghost Kali's. First-pass position under the desk, eyeballed
     against the reference mockup — nudge if it doesn't sit right on the
     floor line.
   -->
-  <a class="kali-cat" href="/kali" aria-label="Kali">
+  <a
+    class="kali-cat hotspot--bio"
+    href="/kali"
+    aria-label="Kali"
+    data-hotspot-id="kali-cat"
+    data-bio="/images/Kali-bio.png,/images/Ghost-Kali-bio.png"
+  >
     <img src="/images/office/kali-cat.png" alt="" />
   </a>
 
@@ -160,6 +167,22 @@ const deskIds = deskDrawers.map((d) => d.id);
     pointer-events: none;
     user-select: none;
     -webkit-user-drag: none;
+  }
+
+  /*
+    Stand-in: the Shows drawer reuses the Story picture (nav-story.png)
+    until it has its own. Only the open drawer is cut out of the Story
+    picture (front, dark cavity above it, slats beside it) and moved down
+    --shows-shift px into the Shows slot. Cutting a tight shape, not a
+    full-width strip, keeps the cabinet edges from showing seams.
+  */
+  .office-scene {
+    --shows-shift: 146; /* pixels, unitless; 146 lines the front up with the old Shows one */
+  }
+
+  .drawer-frame--shows {
+    clip-path: polygon(44px 209px, 238px 209px, 238px 388px, 0 388px, 0 226px, 44px 226px);
+    transform: translateY(calc(var(--shows-shift) * 1px));
   }
 
   .office-scene[data-open-drawer='about'] .drawer-frame--about,

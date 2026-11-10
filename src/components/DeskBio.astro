@@ -2,6 +2,9 @@
 // Popup shown instead of navigating when a hotspot has a `bio` (see
 // hotspots.js) -- the character card slides up over the office, like the
 // hand note (DetectiveNote.astro), while that desk drawer stays open.
+//
+// `data-bio` can list several cards separated by commas; each click on
+// the trigger shows the next one (the Kali cat: Kali, then Ghost Kali).
 ---
 <div class="desk-bio-overlay" data-desk-bio aria-hidden="true">
   <div class="desk-bio-backdrop" data-bio-backdrop></div>
@@ -16,6 +19,8 @@
   const overlay = document.querySelector('[data-desk-bio]');
   const imgEl = overlay?.querySelector('[data-bio-img]');
   const scene = document.querySelector('.office-scene');
+  // How many times each trigger has been opened, to pick its next card.
+  const opened = new WeakMap();
 
   function openBio(src, label, drawerId) {
     if (!overlay || !(imgEl instanceof HTMLImageElement)) return;
@@ -39,8 +44,11 @@
     const trigger = target.closest('.hotspot--bio');
     if (!trigger) return;
     e.preventDefault();
+    const cards = (trigger.getAttribute('data-bio') || '').split(',');
+    const count = opened.get(trigger) ?? 0;
+    opened.set(trigger, count + 1);
     openBio(
-      trigger.getAttribute('data-bio') || '',
+      cards[count % cards.length],
       trigger.getAttribute('aria-label') || '',
       trigger.getAttribute('data-hotspot-id'),
     );
@@ -76,11 +84,12 @@
 
   .desk-bio-card {
     position: absolute;
-    /* Sits left of the desk drawers (x 1138+) so the open drawer stays visible. */
-    left: 490px;
+    /* Centred on the 1920x1080 stage (width = 880 * 2/3 = 587px). */
+    left: 50%;
     top: 100px;
     height: 880px;
     aspect-ratio: 512 / 768;
+    margin-left: -293.5px;
     transform: translateY(110%) rotate(-2deg);
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
