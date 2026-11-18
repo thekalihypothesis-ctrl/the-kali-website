@@ -63,9 +63,9 @@ export const hotspots = [
     note: {
       title: 'Shows',
       body: [
-        'Shows are where the case leaves the screen. Each one is a live, location-based event — part scavenger hunt, part performance — where the Detectives (that’s you) follow a lead into a real place at a real time.',
-        'No two shows run the same script. What you find depends on who shows up, what they notice, and what they choose to do with it — the case reacts to the room, not the other way around.',
-        'Dates and locations get posted here and on the office monitor’s NEXT EVENT feed once they’re locked in. Check back — the window between announcement and show is usually short on purpose.',
+        'Shows are where the case leaves the screen. In Part 1 you first solve a treasure hunt game on your phone to find the venue — the entry point is Helix Core, a Genome Interface Access Point.',
+        'Inside, the venue is a reverse escape room. Players solve puzzles to gain access to the rooms, and clues are hidden within two displays: one at human height, the other at the height of a cat. To finish, players insert a code within the Nucleus.',
+        'Completing Part 1 gives access to Part 2: the alternating reality game (ARG+) and its secret second venue, where teams can become either detectives or viral agents.',
       ],
     },
   },
@@ -80,9 +80,9 @@ export const hotspots = [
     note: {
       title: 'Collectibles',
       body: [
-        'Every case generates evidence, and some of it is built to hold in your hands. The first piece is the case file itself — a printed cover that comes alive under the AR Viewer, revealing the maze hidden inside its artwork.',
-        'Future collectibles follow the same rule: they have to work as physical objects first, digital extensions second. A book that’s actually readable. A marker that’s actually a marker. Nothing exists purely to be scanned.',
-        'What’s been found so far gets listed here as it’s confirmed — check the AR Zone on the shelf for the pieces that are live right now.',
+        'Every collectible is a numbered limited edition and comes with a certificate of authentication.',
+        'Acrylic light box dioramas, custom made to order with LED strips. Limited edition posters, hand screenprinted on quality cartridge paper. T-shirts in a range of sizes, with tighter-fit and child options. Shadow boxes, pre-made or as cut-yourself card sheets.',
+        'Table cut-outs, made from acrylic with their own stands. Cards, as flat cards or pop-ups. Fridge magnets, individually or in packs. Stickers, in a wide variety of collectible packs.',
       ],
     },
   },

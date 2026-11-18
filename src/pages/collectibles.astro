@@ -1,4 +1,8 @@
 ---
-import CaseFileLayout from '../layouts/CaseFileLayout.astro';
+import MainLayout from '../layouts/MainLayout.astro';
+import CollectibleGrid from '../components/CollectibleGrid.astro';
 ---
-<CaseFileLayout id="collectibles" />
+<MainLayout title="Collectibles"><main><section><a href="/">&larr; Back to the office</a><h1>Collectibles</h1><div class="catalog"><CollectibleGrid /></div></section></main></MainLayout>
+<style>
+main{display:flex;align-items:center;height:100%;padding:60px 117px;background:#f5f5f0;color:#111}section{flex:1;min-width:0}a{color:inherit}h1{font-size:38px;text-transform:uppercase}.catalog{height:780px}.catalog :global(.collectible-grid){grid-template-columns:repeat(4,minmax(0,1fr));gap:36px}.catalog :global(span){font-size:24px}.catalog :global(img){height:calc(100% - 64px)}
+</style>

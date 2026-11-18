@@ -1,4 +1,5 @@
 ---
+import CollectibleGrid from "./CollectibleGrid.astro";
 // Popup shown instead of navigating when a hotspot has a `note` (see
 // hotspots.js) — the hand holds up a case note with that hotspot's
 // title/body instead of leaving the office scene.
@@ -28,6 +29,7 @@
       </div>
 
       <div class="note-body" data-note-body></div>
+      <div class="note-products" data-note-products hidden><CollectibleGrid /></div>
 
       <div class="note-divider"></div>
       <div class="note-footer">
@@ -49,6 +51,10 @@
 
   function openNote(title, paragraphs, drawerId) {
     if (!overlay || !titleEl || !bodyEl) return;
+    overlay.classList.toggle('is-collectibles', drawerId === 'collectibles');
+    const products = overlay.querySelector('[data-note-products]');
+    if (products) products.hidden = drawerId !== 'collectibles';
+    bodyEl.hidden = drawerId === 'collectibles';
     titleEl.textContent = title;
     bodyEl.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
     // Long titles shrink so they stay beside the cat mask.
@@ -94,6 +100,12 @@
 </script>
 
 <style>
+  .note-products { flex:1; min-height:0; margin-top:18px; }
+  .note-products[hidden], .note-body[hidden] { display:none; }
+  .is-collectibles .note-stamp, .is-collectibles .note-footer, .is-collectibles .note-divider { display:none; }
+  .is-collectibles .note-header { margin-left:0; }
+  .is-collectibles .note-title { font-size:48px !important; }
+
   .detective-note-overlay {
     position: absolute;
     inset: 0;

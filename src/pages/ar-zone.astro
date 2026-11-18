@@ -1,49 +1,80 @@
 ---
-import MainLayout from '../layouts/MainLayout.astro';
+import SceneLayout from '../layouts/SceneLayout.astro';
+
+// The AR Zone app is built in stages -- list copied from the AR Zone
+// poster. Add or reword stages here.
+const stages = [
+  'Navigate the story, with links to content and social media. Take screenshots and save them. Initially developed for Android.',
+  'Added memes. Links to the game and for bookings. Self-curation gallery. Available on iOS devices.',
+  'Links to the website. Users can upload screenshots to the website gallery. 2D animations included.',
+  'Users can insert themselves into the storyboard frames filter and change text for their own memes and upload them to the website.',
+  'Complex games interaction.',
+];
 ---
-<MainLayout title="AR Zone">
-  <div class="case-file">
-    <a class="back-link" href="/">&larr; Back to the office</a>
-    <h1>AR Zone</h1>
+<SceneLayout title="AR Zone">
+  <div class="ar-zone">
+    <h1>Augmented Reality Zone</h1>
+
     <p>
-      Placeholder content for the "AR Zone" section. Replace this with
-      the real copy, images, or clues for this part of the case.
+      The Augmented Reality Zone (ARZ) is a downloadable app for Android and
+      iOS. The app has two sections. One section displays the story in levels
+      with puzzles. The second section is used in the alternating reality game
+      (ARG+) and the shows.
     </p>
+    <p>
+      It is the digital media version of the Frames display: it can be
+      downloaded and viewed anywhere on a mobile device and be interacted
+      with. The app works with the physical events and can also be used
+      standalone. The app is developed in stages.
+    </p>
+
+    <ol class="stages">
+      {stages.map((text, i) => (
+        <li>
+          <span class="stage-label">Stage {i + 1}</span>
+          <span>{text}</span>
+        </li>
+      ))}
+    </ol>
   </div>
-</MainLayout>
+</SceneLayout>
 
 <style>
-  .case-file {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    padding: 80px 120px;
-    background: #0a0a0a;
-    color: #f5f5f0;
-  }
-
-  .back-link {
-    display: inline-block;
-    margin-bottom: 40px;
-    color: #f5f5f0;
-    text-decoration: none;
-    border-bottom: 1px solid currentColor;
-  }
-
-  .back-link:hover {
-    opacity: 0.7;
-  }
-
   h1 {
-    font-size: 48px;
+    margin: 0 0 24px;
+    font-size: 56px;
+    font-weight: 400;
+    line-height: 1.05;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 24px;
+    letter-spacing: 0.02em;
+    border-bottom: 5px solid #111;
+    padding-bottom: 8px;
   }
 
   p {
-    max-width: 800px;
-    font-size: 18px;
-    line-height: 1.6;
+    margin: 0 0 18px;
+    font-size: 22px;
+    line-height: 1.45;
+  }
+
+  .stages {
+    margin: 30px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .stages li {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    padding: 12px 0;
+    border-top: 2px solid #111;
+    font-size: 20px;
+    line-height: 1.4;
+  }
+
+  .stage-label {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 </style>

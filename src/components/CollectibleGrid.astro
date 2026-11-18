@@ -1,0 +1,14 @@
+---
+import { collectibles } from '../data/collectibles.js';
+---
+<div class="collectible-grid">
+  {collectibles.map(item => <a href={`/collectibles/${item.slug}`} aria-label={`View ${item.name}`}><img src={item.image} alt={item.name} /><span>{item.name}</span></a>)}
+</div>
+<style>
+.collectible-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 18px; height:100%; min-height:0; }
+a { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:0; color:inherit; text-align:center; text-decoration:none; }
+img { width:100%; height:calc(100% - 28px); min-height:0; object-fit:contain; mix-blend-mode:multiply; }
+span { font-size:16px; line-height:1.1; margin-top:4px; }
+a:hover span { text-decoration:underline; }
+a:focus-visible { outline:3px solid currentColor; outline-offset:3px; }
+</style>
