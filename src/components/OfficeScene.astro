@@ -11,7 +11,18 @@ const debug = Astro.url.searchParams.get('debug') === '1';
 
 // Filing-cabinet drawers: same open/close pictures as the case-file
 // pages' cabinet nav (CabinetNav.astro).
-const drawerIds = ['about', 'story', 'shows', 'collectibles'];
+// Each open-drawer picture is trimmed to the cabinet front and has its own
+// size, so each is placed individually: x, y are scene px, found by image
+// matching against scene-complete.jpg (0.8+ of pixels agree at that spot,
+// less one px either way). Placing them by matching, not at one shared
+// corner, is what keeps the cabinet from shifting as drawers open.
+const cabinetDrawers = [
+  { id: 'about', src: 'nav-about', x: 123, y: 348, w: 252, h: 700 },
+  { id: 'story', src: 'nav-story', x: 123, y: 350, w: 250, h: 698 },
+  { id: 'shows', src: 'nav-shows-open', x: 121, y: 346, w: 248, h: 702 },
+  { id: 'collectibles', src: 'nav-collectibles', x: 121, y: 348, w: 250, h: 700 },
+];
+const drawerIds = cabinetDrawers.map((d) => d.id);
 
 // Desk drawers: public/images/Desk/<art>-Drawer_Closed.png / _Open.png at
 // (x, y) -- found by image matching against the scene -- laid over the
@@ -45,22 +56,20 @@ const deskIds = deskDrawers.map((d) => d.id);
 
   <!--
     Open-drawer pictures for the filing cabinet, laid over the baked-in
-    closed one. nav-<id>.png is the same cabinet art at native size —
-    aligned to the scene by image matching (offset 123,312), then
-    clipped below the cabinet top so the cat mask sitting on it stays.
+    closed one (positions in cabinetDrawers above).
     A drawer opens while you hover it, and stays open while its note is
     showing (DetectiveNote sets data-open-drawer on .office-scene).
-    Shows uses nav-shows-open.png: nav-shows-original-size.png with its
-    white margin made transparent (the file is opaque).
+    Shows uses nav-shows-open.png.
   -->
-  {drawerIds.map((id) => (
+  {cabinetDrawers.map((d) => (
     <img
-      class={`drawer-frame drawer-frame--${id}`}
-      src={`/images/Navbars/nav-${id === 'shows' ? 'shows-open' : id}.png`}
+      class={`drawer-frame drawer-frame--${d.id}`}
+      src={`/images/Navbars/${d.src}.png`}
       alt=""
       aria-hidden="true"
-      width="340"
-      height="736"
+      width={d.w}
+      height={d.h}
+      style={`left:${d.x}px; top:${d.y}px; width:${d.w}px; height:${d.h}px;`}
     />
   ))}
 
@@ -159,12 +168,7 @@ const deskIds = deskDrawers.map((d) => d.id);
 
   .drawer-frame {
     position: absolute;
-    left: 123px;
-    top: 312px;
-    width: 340px;
-    height: 736px;
     display: block;
-    clip-path: inset(44px 0 0 0);
     opacity: 0;
     pointer-events: none;
     user-select: none;

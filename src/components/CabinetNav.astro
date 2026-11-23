@@ -19,18 +19,34 @@ const drawers = [
   { id: 'shows', label: 'Shows', href: '/shows', top: 50.5 },
   { id: 'collectibles', label: 'Collectibles', href: '/collectibles', top: 72 },
 ];
-const frames = ['homepage', ...drawers.map((d) => d.id)];
-const shown = current ?? 'homepage';
+// The closed cabinet (nav-homepage) is always showing. Each open-drawer
+// picture is trimmed to the cabinet front and laid over it at its own spot;
+// x, y, w, h are px on the 340x736 canvas of nav-homepage, found by image
+// matching.
+const open = [
+  { id: 'about', x: 0, y: 36, w: 252, h: 700 },
+  { id: 'story', x: 0, y: 38, w: 250, h: 698 },
+  { id: 'shows', x: -2, y: 34, w: 252, h: 702 },
+  { id: 'collectibles', x: -2, y: 36, w: 250, h: 700 },
+];
+const pct = (n: number, of: number) => `${(n / of) * 100}%`;
 ---
 <nav class="cabinet" aria-label="Case file drawers">
-  {frames.map((id) => (
+  <img
+    class="frame frame--homepage"
+    src="/images/Navbars/nav-homepage.png"
+    alt=""
+    aria-hidden="true"
+    width="340"
+    height="736"
+  />
+  {open.map((f) => (
     <img
-      class={`frame frame--${id} ${id === shown ? 'is-current' : ''}`}
-      src={`/images/Navbars/nav-${id}.png`}
+      class={`frame frame--${f.id} ${f.id === current ? 'is-current' : ''}`}
+      src={`/images/Navbars/nav-${f.id}.png`}
       alt=""
       aria-hidden="true"
-      width="340"
-      height="736"
+      style={`left:${pct(f.x, 340)}; top:${pct(f.y, 736)}; width:${pct(f.w, 340)}; height:${pct(f.h, 736)};`}
     />
   ))}
 
@@ -55,9 +71,6 @@ const shown = current ?? 'homepage';
 
   .frame {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
     display: block;
     opacity: 0;
     pointer-events: none;
@@ -65,13 +78,20 @@ const shown = current ?? 'homepage';
     -webkit-user-drag: none;
   }
 
+  .frame--homepage {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+  }
+
   .frame.is-current {
     opacity: 1;
   }
 
   /* While any drawer is hovered/focused, show only that drawer's frame. */
-  .cabinet:has(.zone:hover) .frame,
-  .cabinet:has(.zone:focus-visible) .frame {
+  .cabinet:has(.zone:hover) .frame:not(.frame--homepage),
+  .cabinet:has(.zone:focus-visible) .frame:not(.frame--homepage) {
     opacity: 0;
   }
 
