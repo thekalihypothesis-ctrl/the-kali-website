@@ -4,5 +4,5 @@ import CollectibleGrid from '../components/CollectibleGrid.astro';
 ---
 <MainLayout title="Collectibles"><main><section><a href="/">&larr; Back to the office</a><h1>Collectibles</h1><div class="catalog"><CollectibleGrid /></div></section></main></MainLayout>
 <style>
-main{display:flex;align-items:center;height:100%;padding:60px 117px;background:#f5f5f0;color:#111}section{flex:1;min-width:0}a{color:inherit}h1{font-size:38px;text-transform:uppercase}.catalog{height:780px}.catalog :global(.collectible-grid){grid-template-columns:repeat(4,minmax(0,1fr));gap:36px}.catalog :global(span){font-size:24px}.catalog :global(img){height:calc(100% - 64px)}
+main{display:flex;align-items:center;height:100%;padding:64px 80px 64px 400px;background:#0a0a0a url('/images/collectibles/page-bg.jpg') center/100% 100% no-repeat;color:#111}section{flex:1;min-width:0}a{color:inherit}h1{font-size:38px;text-transform:uppercase}.catalog{height:780px}.catalog :global(.collectible-grid){grid-template-columns:repeat(4,minmax(0,1fr));gap:36px}.catalog :global(span){font-size:24px}.catalog :global(img){height:calc(100% - 64px)}
 </style>
