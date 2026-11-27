@@ -1,4 +1,5 @@
 ---
+import Analytics from '../components/Analytics.astro';
 interface Props {
   title: string;
 }
@@ -20,7 +21,7 @@ const { title } = Astro.props;
     -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js" is:inline></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js" is:inline></script>
-  </head>
+  <Analytics /></head>
   <body>
     <slot />
   </body>
